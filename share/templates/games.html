@@ -1,0 +1,18 @@
+? my ($app, $user, @games) = @_;
+
+<form action="/new" method="post">
+  <p>Create a new game with
+  <input type="text" name="opponent" id="user_search" value="" autocomplete="off" />
+  </p>
+</form>
+
+<h2>Active Games</h2>
+<ul>
+<? for my $game (@games) { ?>
+<li>
+  <a href="/game/<?= $game->id ?>">
+    <?= $game->opponent($user)->display_name ?>
+  </a>
+</li>
+<? } ?>
+</ul>

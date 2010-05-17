@@ -1,0 +1,319 @@
+body {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  margin: 0px;
+  padding: 0px;
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ccc), to(#eee));
+}
+
+html {
+  height: 100%;
+}
+
+a {
+  color: blue;
+}
+
+form#login {
+  display: block;
+  background: #fff;
+  width: 150px;
+  margin: 0 auto;
+  border: 5px solid #eee;
+  padding: 10px;
+}
+
+form#login input,
+form#login label {
+  display: block;
+  width: 145px;
+}
+
+form#login label {
+  font-size: 11px;
+  color: #666;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  font-weight: normal;
+  letter-spacing: 1px;
+}
+
+form#login input[type="text"],
+form#login input[type="password"] {
+  margin-bottom: 20px;
+  font-size: 1.2em;
+  border: 1px solid #999;
+  border-top: 1px solid #ccc;
+  border-left: 1px solid #ccc;
+  padding: 3px 5px;
+  width: 140px;
+}
+
+form#login input[type="submit"] {
+  font-size: 16px;
+}
+
+form#login span.error {
+  display: block;
+  color: red;
+  font-size: 0.8em;
+  padding-top: 20px;
+}
+
+div#header {
+  width: 840px;
+  margin: 15px auto 0 auto;
+  overflow: hidden;
+}
+
+div#header h1 {
+  text-align: left;
+  float: right;
+  width: 295px;
+  margin: 0;
+  text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
+  padding: 0;
+  color: #fff;
+  font-size: 18px;
+  text-transform: uppercase;
+  font-weight: normal;
+  letter-spacing: 3px;
+}
+
+div#header ul#nav {
+  list-style: none;
+  margin: 0 auto;;
+  padding: 0;
+  background: #fff;
+  font-size: 0.8em;
+  margin-left: 20px;
+  border-bottom: 1px solid #999;
+  border-right: 1px solid #999;
+  float: left;
+}
+
+div#header ul#nav li {
+  float: right;
+  padding: 4px;
+  border-left: 1px solid #ccc;
+}
+
+div#header ul#nav li a {
+  text-decoration: none;
+}
+
+div#footer {
+  margin: 30px 0;
+  font-size: 11px;
+  text-align: center;
+  color: #fff;
+}
+
+div#content {
+  width: 800px;
+  border: 1px solid #ccc;
+  border-top: none;
+  padding: 20px;
+  margin: 0 auto;
+  background: #fff;
+  position: relative;
+  overflow: hidden;
+}
+
+input#user_search {
+  font-size: 1.2em;
+  border: 1px solid #999;
+  border-top: 1px solid #ccc;
+  border-left: 1px solid #ccc;
+  padding: 3px 5px;
+  width: 250px;
+  outline: none;
+}
+
+div#log {
+  float: right;
+  width: 275px;
+  margin-top: 25px;
+}
+
+div#log input[type="text"] {
+  width: 200px;
+  border: 1px solid #999;
+  border-top: 1px solid #ccc;
+  border-left: 1px solid #ccc;
+  padding: 3px 5px;
+  outline: none;
+}
+
+div#log button {
+  width: 54px;
+  float: right;
+  margin-top: 2px;
+  padding: 5px 0 4px 0;
+  background: #000;
+  color: #fff;
+}
+
+div#log ul#messages {
+  height: 270px;
+  border: 1px solid #ccc;
+  width: 275px;
+  margin: 10px 0;
+  padding: 0;
+  background: #eee;
+  overflow: auto;
+  list-style: none;
+  font-size: 10px;
+}
+
+div#log ul#messages span.sender {
+  font-weight: bold;
+}
+
+div#log ul#messages li {
+  padding: 2px 4px;
+}
+
+table#game_info {
+  float: right;
+  width: 275px;
+  margin: 0;
+  padding: 0;
+  font-size: 1.2em;
+  color: #999;
+}
+
+table#game_info tr.active td {
+  color: #000;
+}
+
+table#game_info tr td:first-child {
+  background: #5C7C4C;
+  font-family: monospace;
+  color: #fff;
+  text-align: right;
+  font-size: 1.4em;
+  width: 70px;
+  padding-right: 5px;
+  padding-left: 0px;
+  border: 2px solid #97AA89;
+  border-top: 2px solid #344825;
+  border-left: 2px solid #344825;
+}
+
+table#game_info tr td {
+  font-weight: bold;
+  padding-left: 5px;
+}
+
+table#board {
+  background: #eee;
+  border: 1px solid #ccc;
+  width: 512px;
+  float: left;
+}
+
+table#board td {
+  border-bottom: 1px solid #ccc;
+  width: 31px;
+  height: 31px;
+  border-right: 1px solid #ccc;
+  background: #fff;
+}
+
+table#tray {
+  position: absolute;
+  bottom: 20px;
+  right: 40px;
+}
+
+
+table#tray td {
+  width: 30px;
+  height: 30px;
+}
+
+table#board td div.piece:hover {
+  cursor: default;
+}
+
+div.piece {
+  width: 26px;
+  height: 23px;
+  border: 2px solid #ccc;
+  border-bottom: 2px solid #999;
+  border-right: 2px solid #999;
+  text-align: center;
+  position: relative;
+  -webkit-border-radius: 3px;
+  font-size: 20px;
+  line-height: 20px;
+  text-transform: uppercase;
+  padding-top: 3px;
+  background: #eee;
+  font-weight: bold;
+  z-index: 400;
+}
+
+table#tray div.piece:hover {
+  cursor: move;
+}
+
+div.piece span.letter_score {
+  position: absolute;
+  bottom: 0px;
+  right: 1px;
+  color: #666;
+  text-align: right;
+  font-size: 8px;
+  line-height: 8px;
+  font-weight: normal;
+}
+
+button {
+  color: #fff;
+  background: #000;
+  text-transform: uppercase;
+  cursor: pointer;
+  letter-spacing: 1px;
+  text-align: center;
+  display: block;
+  border: none;
+  font-size: 10px;
+}
+
+button#submit {
+  position: absolute;
+  bottom: 75px;
+  right: 20px;
+  width: 274px;
+  padding: 5px 10px;
+}
+
+button:hover {
+  text-shadow: 0px 0px 5px #fff;
+}
+
+button[disabled="disabled"] {
+  display: none;
+}
+
+div#dialog {
+  display: none;
+  z-index: 999;
+  position: absolute;
+  left: 172px;
+  top: 70px;
+  width: 200px;
+  background: #fff;
+  border: 3px solid #ccc;
+  -webkit-box-shadow: 0 0 10px rgba(0,0,0,0.8);
+}
+
+div#dialog p {
+  margin: 10px;
+  text-align: center;
+}
+div#dialog button {
+  margin: 10px auto;
+}

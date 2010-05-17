@@ -1,0 +1,28 @@
+? my ($app, $template, @args) = @_;
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Leisurely Letters</title>
+    <link type="text/css" rel="stylesheet" href="<?= $app->static("css/wwf.css") ?>" />
+    <script type="text/javascript" src="<?= $app->static("js/prototype.js") ?>"></script>
+    <script type="text/javascript" src="<?= $app->static("js/scriptaculous.js") ?>"></script>
+    <script type="text/javascript" src="<?= $app->static("js/wwf.js") ?>"></script>
+  </head>
+  <body>
+    <div id="header">
+      <ul id="nav">
+      <? if ($template ne "login" and $template ne "register") { ?>
+        <li><a href="/logout">Logout</a></li>
+        <li><a href="/games">Games</a></li>
+      <? } else { ?>
+        <li><a href="/register">Register</a></li>
+        <li><a href="/login">Login</a></li>
+      <? } ?>
+      </ul>
+      <h1>Leisurely Letters</h1>
+    </div>
+    <div id="content">
+      <?= $_mt->render_file("$template.html", $app, @args) ?>
+    </div>
+  </body>
+</html>

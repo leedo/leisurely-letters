@@ -1,0 +1,19 @@
+? my ($app, $board) = @_;
+
+<table id="board" cellspacing="2" cellpadding="0" border="0">
+  <? for my $row (@{ $board->grid }) { ?>
+  <tr>
+    <? for my $cell (@{ $row }) { ?>
+    <td<? if (!$cell) {?> class="empty"<? } ?>>
+      <? if ($cell) { ?>
+      <div class="piece">
+        <?= $cell ?>
+        <span class="letter_score"><?= $board->letter_score($cell) ?></span>
+      </div>
+      <? } ?>
+    </td>
+    <? } ?>
+  </tr>
+  <? } ?>
+</table>
+

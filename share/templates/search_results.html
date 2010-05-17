@@ -1,0 +1,7 @@
+? my ($app, @users) = @_;
+
+<ul id="user_search_results">
+  <? for my $user (@users) { ?>
+  <li class="search_result" id="<?= $user->[0] ?>"><?= $user->[2] ?></li>
+  <? } ?>
+</ul>

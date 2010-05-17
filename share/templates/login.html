@@ -1,0 +1,15 @@
+? my ($app, $parameters, $error) = @_;
+
+<form action="/login" method="post" id="login">
+  <label for="email">Email Address</label>
+  <input type="text" name="email" value="<?= $parameters->{email} || "" ?>" id="email" />
+
+  <label for="password">Password</label>
+  <input type="password" name="password" value ="" id="password" />
+
+  <input type="submit" value="Log in" />
+
+  <? if ($error) { ?>
+    <span class="error"><?= $error ?></span>
+  <? } ?>
+</form>
