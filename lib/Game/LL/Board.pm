@@ -113,7 +113,6 @@ sub play_letters {
     $self->grid($clone);
     return $score;
   }
-  $self->errormsg("Invalid word");
   return 0;
 }
 
@@ -138,7 +137,7 @@ sub check_grid {
       (grep {$_->[1] == $x and $_->[2] == $y} @letters) ? $pointed_word = 1 : $connected = 1;
     }
     elsif ($current_word and length $current_word > 1) {
-      if (!$connected and !self->started) {
+      if (!$connected and $self->started) {
         $error = 1;
         $self->errormsg("Word is not connected!");
       }

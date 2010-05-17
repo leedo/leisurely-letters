@@ -3,11 +3,11 @@ body {
   font-size: 14px;
   margin: 0px;
   padding: 0px;
-  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ccc), to(#eee));
+  background: #ccc;
 }
 
 html {
-  height: 100%;
+  background: #ccc;
 }
 
 a {
