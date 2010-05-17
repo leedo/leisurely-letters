@@ -5,7 +5,7 @@ use POSIX qw/floor/;
 use List::Util qw/shuffle reduce/;
 use JSON;
 use Text::MicroTemplate qw/encoded_string/;
-use Game::LL::Board::Data qw/letter_count letter_score word_multiplier
+use Game::LL::Board::Data qw/letter_count word_multiplier letter_score
                              letter_multiplier valid_word/;
 
 has grid => (
@@ -79,7 +79,7 @@ sub check_grid {
 
   # state variables
   my ($points, $current_word, $word_score, $word_multiplier,
-      $pointed_word, $connected, $error);
+      $pointed_word, $connected, $error, $valid_start);
 
   my $reset_word = sub {
     $current_word = "";
@@ -87,6 +87,7 @@ sub check_grid {
     $word_multiplier = 1;
     $pointed_word = 0;
     $connected = 0;
+    $valid_start = 0;
   };
 
   my $next_letter = sub {
@@ -96,6 +97,7 @@ sub check_grid {
     if ($letter) {
       $current_word .= $letter;
       if (grep {$_->[1] == $x and $_->[2] == $y} @letters) {
+        $valid_start = 1 if $x == 7 and $y == 7;
         $pointed_word = 1;
         $word_multiplier *= word_multiplier($y, $x);
         $word_score += letter_score($letter) * letter_multiplier($y, $x);
@@ -106,16 +108,25 @@ sub check_grid {
       }
     }
     elsif ($current_word and length $current_word > 1) {
-      if (!$connected and $self->started) {
+      print STDERR "checking $current_word\n";
+      if (!$self->started and !$valid_start) {
         $error = 1;
-        $self->errormsg("Word is not connected!");
+        $self->errormsg("Invalid starting position for $current_word");
+      }
+      elsif ($self->started and !$connected) {
+        $error = 1;
+        $self->errormsg("Word $current_word is not connected!");
       }
       elsif (!valid_word($current_word)) {
         $error = 1;
-        $self->errormsg("Invalid word");
+        $self->errormsg("Invalid word $current_word");
       }
       elsif ($pointed_word) {
         $points += $word_score * $word_multiplier;
+        if (!$self->started) {
+          print STDERR "SETTING STARTED with $current_word\n";
+          $self->started(1);
+        }
       }
       $reset_word->();
     }
@@ -140,7 +151,7 @@ sub check_grid {
     $reset_word->();
   }
   
-  $self->started(1);
+  print STDERR "points: $points\n";
   return $points;
 }
 

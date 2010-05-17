@@ -1,14 +1,18 @@
 ? my ($app, $board) = @_;
 
 <table id="board" cellspacing="2" cellpadding="0" border="0">
-  <? for my $row (@{ $board->grid }) { ?>
+  <? for my $y (0 .. @{ $board->grid } - 1) { ?>
   <tr>
-    <? for my $cell (@{ $row }) { ?>
-    <td<? if (!$cell) {?> class="empty"<? } ?>>
-      <? if ($cell) { ?>
+    <? for my $x (0 .. @{ $board->grid->[$y] } - 1) { ?>
+    <? my $letter = $board->grid->[$y][$x]; ?>
+    <? my $letter_multi = letter_multiplier($y, $x); ?>
+    <? my $word_multi = word_multiplier($y, $x); ?>
+    <? my $center = ($x == 7 and $y == 7); ?>
+    <td class="<?= $center ? "center " : "" ?>letterX<?= $letter_multi ?> wordX<?= $word_multi ?><?= $letter ? "" : " empty" ?>">
+      <? if ($letter) { ?>
       <div class="piece">
-        <?= $cell ?>
-        <span class="letter_score"><?= $board->letter_score($cell) ?></span>
+        <?= $letter ?>
+        <span class="letter_score"><?= letter_score($letter) ?></span>
       </div>
       <? } ?>
     </td>

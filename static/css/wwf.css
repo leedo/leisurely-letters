@@ -221,6 +221,26 @@ table#board td {
   background: #fff;
 }
 
+table#board td.wordX3 {
+  background: orange;
+}
+
+table#board td.wordX2 {
+  background: pink;
+}
+
+table#board td.letterX2 {
+  background: lightblue;
+}
+
+table#board td.letterX2 {
+  background: blue;
+}
+
+table#board td.center {
+  background: red;
+}
+
 table#tray {
   position: absolute;
   bottom: 20px;

@@ -104,6 +104,7 @@ sub play_pieces {
     my @letters = $self->remove_user_letters($user, map {$_->[0]} @pieces);
     push @letters, $board->take_letters(7 - @letters);
     $self->update({
+      board => freeze($board),
       $letters => join("", @letters),
       $score => $self->$score + $points,
       active_player => ($self->active_player == 1 ? 2 : 1),

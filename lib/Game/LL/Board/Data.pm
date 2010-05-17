@@ -4,7 +4,7 @@ use Path::Class qw/file/;
 
 our @EXPORT_OK = qw/letter_count letter_score word_multiplier letter_multiplier valid_word/;
 
-my $scores = {
+our $scores = {
   a => 1,  b => 3,  c => 3,  d => 2,
   e => 1,  f => 4,  g => 2,  h => 4,
   i => 1,  j => 8,  k => 5,  l => 1,
@@ -14,7 +14,7 @@ my $scores = {
   y => 4,  z => 10
 };
 
-my $counts = {
+our $counts = {
   e => 12, a => 9, i => 9, o => 8, n => 6, r => 6,
   t => 6,  l => 4, s => 4, u => 4, d => 4, g => 3,
   b => 2,  c => 2, m => 2, p => 2, f => 2, h => 2,
@@ -22,7 +22,7 @@ my $counts = {
   q => 1,  z => 1
 };
 
-my $letter_multipiers = {
+our $letter_multipliers = {
   1 => { 4 => 2, 12 => 2 },
   2 => { 6 => 3, 10 => 3 },
   3 => { 7 => 2, 9 => 2 },
@@ -38,7 +38,7 @@ my $letter_multipiers = {
   15 => { 4 => 2, 12 => 2 },
 };
 
-my $word_multipliers = {
+our $word_multipliers = {
   1 => { 1 => 3, 8 => 3, 15 => 3 },
   2 => { 2 => 2, 14 => 2 },
   3 => { 3 => 2, 13 => 2 },
