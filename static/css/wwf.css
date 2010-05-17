@@ -222,23 +222,32 @@ table#board td {
 }
 
 table#board td.wordX3 {
-  background: orange;
+  background: #e98a4c;
 }
 
 table#board td.wordX2 {
-  background: pink;
+  background: #f1adab;
 }
 
 table#board td.letterX2 {
-  background: lightblue;
+  background: #b5d1fa;
 }
 
-table#board td.letterX2 {
-  background: blue;
+table#board td.letterX3 {
+  background: #344d84;
 }
 
 table#board td.center {
-  background: red;
+  background: #e12e29;
+}
+
+table#board td span.multiplier {
+  display: block;
+  color: #fff;
+  font-size: 9px;
+  line-height: 12px;
+  text-align: center;
+  opacity: 0.7;
 }
 
 table#tray {

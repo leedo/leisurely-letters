@@ -14,6 +14,20 @@
         <?= $letter ?>
         <span class="letter_score"><?= letter_score($letter) ?></span>
       </div>
+      <? } else { ?>
+        <span class="multiplier">
+          <? if ($letter_multi == 2) { ?>
+            double letter
+          <? } elsif ($letter_multi == 3) { ?>
+            tripple letter
+          <? } elsif ($word_multi == 2) { ?>
+            double word
+          <? } elsif ($word_multi == 3) { ?>
+            tripple word
+          <? } elsif ($center) {?>
+            start here
+          <? } ?>
+        </span>
       <? } ?>
     </td>
     <? } ?>
