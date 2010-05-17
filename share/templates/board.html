@@ -1,6 +1,6 @@
 ? my ($app, $board) = @_;
 
-<table id="board" cellspacing="2" cellpadding="0" border="0">
+<table id="board" cellspacing="4" cellpadding="0" border="0">
   <? for my $y (0 .. @{ $board->grid } - 1) { ?>
   <tr>
     <? for my $x (0 .. @{ $board->grid->[$y] } - 1) { ?>

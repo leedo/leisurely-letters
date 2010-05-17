@@ -69,7 +69,7 @@ div#header {
 div#header h1 {
   text-align: left;
   float: right;
-  width: 295px;
+  width: 268px;
   margin: 0;
   text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
   padding: 0;
@@ -132,12 +132,12 @@ input#user_search {
 
 div#log {
   float: right;
-  width: 275px;
+  width: 243px;
   margin-top: 25px;
 }
 
 div#log input[type="text"] {
-  width: 200px;
+  width: 170px;
   border: 1px solid #999;
   border-top: 1px solid #ccc;
   border-left: 1px solid #ccc;
@@ -157,7 +157,6 @@ div#log button {
 div#log ul#messages {
   height: 270px;
   border: 1px solid #ccc;
-  width: 275px;
   margin: 10px 0;
   padding: 0;
   background: #eee;
@@ -176,7 +175,7 @@ div#log ul#messages li {
 
 table#game_info {
   float: right;
-  width: 275px;
+  width: 245px;
   margin: 0;
   padding: 0;
   font-size: 1.2em;
@@ -208,36 +207,36 @@ table#game_info tr td {
 
 table#board {
   background: #eee;
-  border: 1px solid #ccc;
-  width: 512px;
   float: left;
+  border: 1px solid #ccc;
 }
 
 table#board td {
   border-bottom: 1px solid #ccc;
+  border-right: 1px solid #ccc;
   width: 31px;
   height: 31px;
-  border-right: 1px solid #ccc;
   background: #fff;
+  -webkit-border-radius: 3px;
 }
 
-table#board td.wordX3 {
+table#board td.empty.wordX3 {
   background: #e98a4c;
 }
 
-table#board td.wordX2 {
+table#board td.empty.wordX2 {
   background: #f1adab;
 }
 
-table#board td.letterX2 {
+table#board td.empty.letterX2 {
   background: #b5d1fa;
 }
 
-table#board td.letterX3 {
+table#board td.empty.letterX3 {
   background: #344d84;
 }
 
-table#board td.center {
+table#board td.empty.center {
   background: #e12e29;
 }
 
@@ -253,7 +252,7 @@ table#board td span.multiplier {
 table#tray {
   position: absolute;
   bottom: 20px;
-  right: 40px;
+  right: 15px;
 }
 
 
@@ -267,8 +266,8 @@ table#board td div.piece:hover {
 }
 
 div.piece {
-  width: 26px;
-  height: 23px;
+  width: 27px;
+  height: 24px;
   border: 2px solid #ccc;
   border-bottom: 2px solid #999;
   border-right: 2px solid #999;
