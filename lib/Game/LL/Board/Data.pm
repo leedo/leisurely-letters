@@ -52,29 +52,30 @@ our $word_multipliers = {
   15 => { 1 => 3, 8 => 3, 15 => 3 },
 };
 
-my $dict = do {;
-  my $file = file("/usr/share/dict/words")->openr;
+my $dict = do {
+  local $/ = "\r\n";
+  my $file = file("./share/TWL06.txt")->openr;
   my $words = {};
   while (my $word = <$file>) {
-    chomp $word;
-    $words->{$word} = 1;
+    chomp($word);
+    $words->{lc $word} = 1;
   }
   $words;
 };
 
 sub valid_word {
   my $word = shift;
-  return $dict->{$word} || 0;
+  return $dict->{lc $word} || 0;
 }
 
 sub letter_count {
   my $letter = shift;
-  return $counts->{$letter} || 0;
+  return $counts->{lc $letter} || 0;
 }
 
 sub letter_score {
   my $letter = shift;
-  return $scores->{$letter} || 0;
+  return $scores->{lc $letter} || 0;
 }
 
 sub letter_multiplier {

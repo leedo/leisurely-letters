@@ -108,25 +108,21 @@ sub check_grid {
       }
     }
     elsif ($current_word and length $current_word > 1) {
-      print STDERR "checking $current_word\n";
       if (!$self->started and !$valid_start) {
         $error = 1;
-        $self->errormsg("Invalid starting position for $current_word");
+        $self->errormsg("Invalid starting position");
       }
       elsif ($self->started and !$connected) {
         $error = 1;
-        $self->errormsg("Word $current_word is not connected!");
+        $self->errormsg("Word is not connected!");
       }
       elsif (!valid_word($current_word)) {
         $error = 1;
-        $self->errormsg("Invalid word $current_word");
+        $self->errormsg("Invalid word");
       }
       elsif ($pointed_word) {
         $points += $word_score * $word_multiplier;
-        if (!$self->started) {
-          print STDERR "SETTING STARTED with $current_word\n";
-          $self->started(1);
-        }
+        $self->started(1) if !$self->started;
       }
       $reset_word->();
     }
@@ -151,7 +147,6 @@ sub check_grid {
     $reset_word->();
   }
   
-  print STDERR "points: $points\n";
   return $points;
 }
 
