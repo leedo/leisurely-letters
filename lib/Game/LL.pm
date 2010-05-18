@@ -47,7 +47,7 @@ has share_dir => (
 
 has static_prefix => (
   is => 'ro',
-  default => '/static',
+  default => 'http://static.leisurelyletters.com',
 );
 
 has url_handlers => (
