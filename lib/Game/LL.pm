@@ -87,6 +87,7 @@ sub handle_state {
   if ($game->last_update > $time) {
     $state->{board} = $self->render_section("board", thaw $game->board);
     $state->{game_info} = $self->render_section("game_info", $user, $game);
+    $state->{letters} = [$game->player_letters($user)];
   }
   $state->{last_update} = time;
   return $self->respond($state);

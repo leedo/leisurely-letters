@@ -81,9 +81,35 @@ var Game = Class.create({
             var position = piece.getStorage().get("position");
             if (position) piece.remove();
           });
+
+          if (data.letters) this.updateLetters(data.letters);
         }
       }.bind(this)
     });
+  },
+
+  updateLetters: function (letters) {
+    var current_letters = this.tray.select('.piece').collect(function (piece) {
+      return piece.down('input').value;
+    });
+    current_letters.each(function (letter) {
+      var index = letters.indexOf(letter);
+      if (index != -1) letters.splice(index, 1);
+    });
+    var tds = this.tray.select("td");
+    letters.each(function (letter) {
+      var piece = "<div class='piece'>" + letter
+                + "<input type='hidden' name='letter' value='" + letter + "' />"
+                + "<span class='letter_score'>" + Game.letter_scores[letter] + "</span>"
+                + "</div>";
+      for (var i = 0; i < tds.length; i++) {
+        if (!tds[i].down(".piece")) {
+          tds[i].insert(piece);
+          this.makeDraggable(tds[i].down(".piece"));
+          break;
+        }
+      }
+    }.bind(this));
   },
 
   getPiecePositions: function () {
@@ -99,16 +125,18 @@ var Game = Class.create({
     return played_pieces;
   },
 
-  setupTray: function () {
-    this.tray.select(".piece").each(function(piece) {
-      piece.absolutize();
-      new Draggable(piece, {
-        onStart: function (piece, event) {
-          var storage = piece.element.getStorage();
-          storage.unset("position");
-        }
-      });
+  makeDraggable: function (piece) {
+    piece.absolutize();
+    new Draggable(piece, {
+      onStart: function (piece, event) {
+        var storage = piece.element.getStorage();
+        storage.unset("position");
+      }
     });
+  },
+
+  setupTray: function () {
+    this.tray.select(".piece").each(this.makeDraggable);
   },
 
   setupBoard: function () {
