@@ -43,8 +43,10 @@ var Game = Class.create({
     if (data.your_turn != this.your_turn) {
       if (data.your_turn) {
         $('submit').disabled = null;
+        document.title = "(!) Leisurely Letters";
       } else {
         $('submit').disabled = "disabled";
+        document.title = "Leisurely Letters";
       }
     }
   },
