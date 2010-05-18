@@ -130,6 +130,10 @@ input#user_search {
   outline: none;
 }
 
+input#user_search.empty {
+  color: #bbb;
+}
+
 div#log {
   float: right;
   width: 243px;
