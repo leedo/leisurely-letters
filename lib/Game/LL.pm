@@ -126,7 +126,7 @@ sub handle_message {
 sub game {
   my ($self, $req, $user, $gameid) = @_;
   my $game = $self->schema->resultset("Game")->find($gameid);
-  if ($game) {
+  if ($game and ($game->p1->id == $user->id or $game->p2->id == $user->id)) {
     my $board = thaw $game->board;
     return $self->respond("game", $user, $game, $board);
   }

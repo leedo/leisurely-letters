@@ -1,8 +1,25 @@
 ? my ($app, $user, @games) = @_;
 
+<script type="text/javascript">
+  document.observe("dom:loaded", function () {
+    var input = $('user_search');
+    input.observe("focus", function (event) {
+      if (input.value == "email address") {
+        input.value = "";
+        input.removeClassName("empty");
+      }
+    });
+    input.observe("blur", function (event) {
+      if (input.value == "") {
+        input.value = "email address";
+        input.addClassName("empty");
+      }
+    });
+  });
+</script>
 <form action="/new" method="post">
   <p>Create a new game with
-  <input type="text" name="opponent" id="user_search" value="" autocomplete="off" />
+  <input type="text" name="opponent" id="user_search" class="empty" value="email address" autocomplete="off" />
   </p>
 </form>
 
