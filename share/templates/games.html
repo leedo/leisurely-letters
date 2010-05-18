@@ -18,17 +18,18 @@
   });
 </script>
 <form action="/new" method="post">
-  <p>Create a new game with
+  <p id="create_game">Create a new game with
   <input type="text" name="opponent" id="user_search" class="empty" value="email address" autocomplete="off" />
   </p>
 </form>
 
 <h2>Active Games</h2>
-<ul>
+<ul class="games">
 <? for my $game (@games) { ?>
 <li>
   <a href="/game/<?= $game->id ?>">
     <?= $game->opponent($user)->display_name ?>
+    <span class="email"><?= $game->opponent($user)->email ?></span>
   </a>
 </li>
 <? } ?>
