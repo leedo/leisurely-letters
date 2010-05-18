@@ -17,16 +17,13 @@ a {
 form#login {
   display: block;
   background: #fff;
-  width: 150px;
+  width: 200px;
   margin: 0 auto;
-  border: 5px solid #eee;
-  padding: 10px;
 }
 
 form#login input,
 form#login label {
   display: block;
-  width: 145px;
 }
 
 form#login label {
@@ -41,16 +38,15 @@ form#login label {
 form#login input[type="text"],
 form#login input[type="password"] {
   margin-bottom: 20px;
-  font-size: 1.2em;
+  font-size: 14px;
   border: 1px solid #999;
   border-top: 1px solid #ccc;
   border-left: 1px solid #ccc;
   padding: 3px 5px;
-  width: 140px;
 }
 
-form#login input[type="submit"] {
-  font-size: 16px;
+form#login button[type="submit"] {
+  width: 100px;
 }
 
 form#login span.error {
@@ -153,7 +149,6 @@ div#log button {
   width: 54px;
   float: right;
   margin-top: 2px;
-  padding: 5px 0 4px 0;
   background: #000;
   color: #fff;
 }
@@ -312,6 +307,7 @@ button {
   display: block;
   border: none;
   font-size: 10px;
+  padding: 5px 10px;
 }
 
 button#submit {
