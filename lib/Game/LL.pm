@@ -156,7 +156,9 @@ sub new_game {
 
 sub games {
   my ($self, $req, $user) = @_;
-  my @games = $self->schema->resultset("Game")->all;
+  my @games = $self->schema->resultset("Game")->search([
+    {p1 => $user->id}, {p2 => $user->id}
+  ]);
   return $self->respond("games", $user, @games);
 }
 
