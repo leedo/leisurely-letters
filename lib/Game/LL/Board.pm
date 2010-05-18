@@ -79,7 +79,7 @@ sub check_grid {
 
   # state variables
   my ($points, $current_word, $word_score, $word_multiplier,
-      $pointed_word, $connected, $error, $valid_start);
+      $pointed_word, $connected, $error, $valid_start, $_x, $_y);
 
   my $reset_word = sub {
     $current_word = "";
@@ -91,7 +91,7 @@ sub check_grid {
   };
 
   my $next_letter = sub {
-    my ($x, $y) = @_;
+    my ($y, $x) = @_;
     my $letter = $grid->[$y][$x];
 
     if ($letter) {
@@ -107,7 +107,7 @@ sub check_grid {
         $word_score += letter_score($letter);
       }
     }
-    elsif ($current_word) {
+    elsif ($current_word and length $current_word > 1) {
       if (!$self->started and !$valid_start) {
         $error = 1;
         $self->errormsg("Invalid starting position");
@@ -126,6 +126,15 @@ sub check_grid {
       }
       $reset_word->();
     }
+    elsif (length $current_word == 1) {
+      # check if last square (this letter) is floating in space
+      unless ($grid->[$_y - 1][$_x] or $grid->[$_y + 1][$_x]
+           or $grid->[$_y][$_x - 1] or $grid->[$_y][$_x + 1]) {
+         $error = 1;
+         $self->errormsg("A letter is floating in space, man.");
+      }
+      $reset_word->();
+    }
     else {
       $reset_word->();
     }
@@ -134,19 +143,23 @@ sub check_grid {
   # set initial state values
   $reset_word->();
   $self->errormsg("");
+  ($_x, $_y) = (0, 0);
 
   for (my $y = 0; $y < 16; $y++) {
     for (my $x = 0; $x < 16; $x++) {
       $next_letter->($y, $x);
       return 0 if $error;
+      ($_y, $_x) = ($y, $x);
     }
     $reset_word->();
   }
 
+  ($_x, $_y) = (0, 0);
   for (my $x = 0; $x < 16; $x++) {
     for (my $y = 0; $y < 16; $y++) {
       $next_letter->($y, $x);
       return 0 if $error;
+      ($_y, $_x) = ($y, $x);
     }
     $reset_word->();
   }
