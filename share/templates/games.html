@@ -26,7 +26,7 @@
 <h2>Active Games</h2>
 <ul class="games">
 <? for my $game (@games) { ?>
-<li>
+<li<? if ($game->is_current_player($user)) { ?> class="active"<? } ?>>
   <a href="/game/<?= $game->id ?>">
     <?= $game->opponent($user)->display_name ?>
     <span class="email"><?= $game->opponent($user)->email ?></span>

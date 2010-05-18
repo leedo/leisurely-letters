@@ -1,5 +1,16 @@
 ? my ($app, $parameters, $error) = @_;
 
+<script type="text/javascript">
+  document.observe("dom:loaded", function () {
+    var submit = function (event) {
+      if (event.keyCode == Event.KEY_RETURN) {
+        $('login').submit();
+      }
+    };
+    $('email').observe("keypress", submit);
+    $('password').observe("keypress", submit);
+  });
+</script>
 <form action="/login" method="post" id="login">
   <label for="email">Email Address</label>
   <input type="text" name="email" value="<?= $parameters->{email} || "" ?>" id="email" />
