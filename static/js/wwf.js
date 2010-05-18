@@ -6,6 +6,7 @@ var Game = Class.create({
     this.tray = $('tray');
     this.board = $('board');
     this.say = $('log_input');
+    this.submitting = false;
     this.setupTray();
     this.setupBoard();
     this.startPoll();
@@ -23,7 +24,10 @@ var Game = Class.create({
     new Ajax.Request("/game/"+this.id+"/state", {
       method: "post",
       parameters: {time: this.last_update},
-      onSuccess: this.handleState.bind(this)
+      onSuccess: function (transport) {
+        if (!this.submitting)
+          this.handleState(transport);
+      }.bind(this)
     });
   },
 
@@ -53,24 +57,37 @@ var Game = Class.create({
     event.stop();
     var message = $('message').value;
     $('message').value = "";
+    this.submitting = true;
     new Ajax.Request("/say", {
       method: "post",
       parameters: {message: message, game: this.id, time: this.last_update},
-      onSuccess: this.handleState.bind(this)
+      onSuccess: function (transport) {
+        this.handleState(transport);
+        this.submitting = false;
+      }.bind(this)
     });
+  },
+
+  displayDialog: function (message) {
+    $('dialogmsg').innerHTML = message;
+    $('dialog').setStyle({display:"block"});
   },
 
   submitLetters: function (event) {
     event.stop();
     var data = Object.toJSON(this.getPiecePositions());
+    this.submitting = true;
     new Ajax.Request("/play", {
       method: "post",
       parameters: {pieces: data, game: this.id, time: this.last_update},
+      onError: function (transport) {
+        this.submitting = false;
+        this.displayDialog("Error submitting letters :-(");
+      }.bind(this),
       onSuccess: function (transport) {
         var data = transport.responseText.evalJSON();
         if (data.error) {
-          $('dialogmsg').innerHTML = (data.error ? data.error : "Unknown error");
-          $('dialog').setStyle({display:"block"});
+          this.displayDialog((data.error ? data.error : "Unknown error"));
         }
         else {
           // get new board
@@ -84,6 +101,7 @@ var Game = Class.create({
 
           if (data.letters) this.updateLetters(data.letters);
         }
+        this.submitting = false;
       }.bind(this)
     });
   },
