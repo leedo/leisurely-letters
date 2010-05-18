@@ -2,7 +2,7 @@ package Game::LL::Board;
 
 use Any::Moose;
 use POSIX qw/floor/;
-use List::Util qw/shuffle reduce/;
+use List::Util qw/shuffle reduce first/;
 use JSON;
 use Text::MicroTemplate qw/encoded_string/;
 use Game::LL::Board::Data qw/letter_count word_multiplier letter_score
@@ -96,7 +96,7 @@ sub check_grid {
 
     if ($letter) {
       $current_word .= $letter;
-      if (grep {$_->[1] == $x and $_->[2] == $y} @letters) {
+      if (first {$_->[1] == $x and $_->[2] == $y} @letters) {
         $valid_start = 1 if $x == 7 and $y == 7;
         $pointed_word = 1;
         $word_multiplier *= word_multiplier($y, $x);
@@ -107,7 +107,7 @@ sub check_grid {
         $word_score += letter_score($letter);
       }
     }
-    elsif ($current_word and length $current_word > 1) {
+    elsif ($current_word) {
       if (!$self->started and !$valid_start) {
         $error = 1;
         $self->errormsg("Invalid starting position");
