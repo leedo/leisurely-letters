@@ -76,10 +76,20 @@ sub BUILD {
 sub handle_state {
   my ($self, $req, $user, $gameid) = @_;
   my $game = $self->schema->resultset("Game")->find($gameid);
+  my $state = {
+    your_turn => $game->is_current_player($user) ? 1 : 0,
+  };
   my $time = $req->parameters->{time};
-  my $messages = $self->render_section("messages", $game->messages);
-  my $board = $self->render_section("board", thaw $game->board);
-  return $self->respond({messages => $messages, board => $board});
+  my @messages = $game->messages->search({created => {">" => $time}});
+  if (@messages) {
+    $state->{messages} = $self->render_section("messages", @messages);
+  }
+  if ($game->last_update > $time) {
+    $state->{board} = $self->render_section("board", thaw $game->board);
+    $state->{game_info} = $self->render_section("game_info", $user, $game);
+  }
+  $state->{last_update} = time;
+  return $self->respond($state);
 }
 
 sub handle_turn {
@@ -90,10 +100,10 @@ sub handle_turn {
   my $res = $req->new_response(200);
   if ($game and $pieces) {
     if ($game->play_pieces($user, @$pieces)) {
-      return $self->respond({status => "ok"});
+      return $self->handle_state($req, $user, $gameid);
     }
   }
-  return $self->respond({status => "nok", error => $game->errormsg});
+  return $self->respond({error => $game->errormsg});
 }
 
 sub handle_message {
@@ -109,8 +119,7 @@ sub handle_message {
       game => $gameid,
     });
   }
-  my $html = $self->render_section("message", $message);
-  return $self->respond({status => "ok", message => $html});
+  return $self->handle_state($req, $user, $gameid);
 }
 
 sub game {

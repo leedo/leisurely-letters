@@ -1,18 +1,7 @@
 ? my ($app, $user, $game, $board) = @_;
 ? my @letters = $game->player_letters($user);
-? my $active = $game->active_player;
 
-<table id="game_info">
-  <tr<? if ($active == 1) { ?> class="active"<? } ?>>
-    <td><?= $game->p1_score ?></td>
-    <td><?= $game->p1->display_name ?></td>
-  </tr>
-  <tr<? if ($active == 2) { ?> class="active"<? } ?>>
-    <td><?= $game->p2_score ?></td>
-    <td><?= $game->p2->display_name ?></td>
-  </tr>
-</table>
-
+<?= $_mt->render_file("game_info.html", $app, $user, $game) ?>
 <?= $_mt->render_file("board.html", $app, $board) ?>
 
 <div id="dialog">
@@ -25,7 +14,9 @@
     <input id="message" type="text" name="message" value="" />
     <button type="submit">Say</button>
   </form>
+  <ul id="messages">
   <?= $_mt->render_file("messages.html", $app, $game->messages) ?>
+  </ul>
 </div>
 
 <table id="tray">
@@ -44,11 +35,11 @@
 </tr>
 </table>
 
-<button id="submit"<? if ($user->id != $active) { ?> disabled="disabled"<? }?>>Submit Letters</button>
+<button id="submit"<?= $game->is_current_player($user) ? "" : " disabled"?>>Submit Letters</button>
 
 <script type="text/javascript">
   document.observe("dom:loaded", function () {
     Object.extend(Game, {letter_scores: <?= $board->json_letter_scores ?>});
-    var game = new Game(<?= $game->id ?>, <?= $game->last_update ?>);
+    var game = new Game(<?= $game->id ?>, <?= time ?>);
   });
 </script>

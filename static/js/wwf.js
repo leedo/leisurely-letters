@@ -1,7 +1,8 @@
 var Game = Class.create({
-  initialize: function (id, last_update) {
+  initialize: function (id, last_update, your_turn) {
     this.id = id;
     this.last_update = last_update;
+    this.your_turn = your_turn;
     this.tray = $('tray');
     this.board = $('board');
     this.say = $('log_input');
@@ -15,20 +16,37 @@ var Game = Class.create({
 
   startPoll: function () {
     clearInterval(this.poll_interval);
-    this.poll_interval = setInterval(this.pollState.bind(this), 5000);
+    this.poll_interval = setInterval(this.pollState.bind(this), 3000);
   },
 
   pollState: function () {
     new Ajax.Request("/game/"+this.id+"/state", {
       method: "post",
       parameters: {time: this.last_update},
-      onSuccess: function (transport) {
-        var data = transport.responseText.evalJSON();
-        $('messages').replace(data.messages);
-        $('board').replace(data.board);
-        this.setupBoard();
-      }.bind(this)
+      onSuccess: this.handleState.bind(this)
     });
+  },
+
+  handleState: function (transport) {
+    var data = transport.responseText.evalJSON();
+    if (data.last_update)
+      this.last_update = data.last_update
+    if (data.messages)
+      $('messages').insert({top:data.messages});
+    if (data.board) {
+      $('board').replace(data.board);
+      this.setupBoard();
+    }
+    if (data.game_info) {
+      $('game_info').replace(data.game_info);
+    }
+    if (data.your_turn != this.your_turn) {
+      if (data.your_turn) {
+        $('submit').disabled = null;
+      } else {
+        $('submit').disabled = "disabled";
+      }
+    }
   },
 
   submitMessage: function (event) {
@@ -37,11 +55,8 @@ var Game = Class.create({
     $('message').value = "";
     new Ajax.Request("/say", {
       method: "post",
-      parameters: {message: message, game: this.id},
-      onSuccess: function (transport) {
-        var data = transport.responseText.evalJSON();
-        $('messages').insert({top: data.message});
-      }
+      parameters: {message: message, game: this.id, time: this.last_update},
+      onSuccess: this.handleState.bind(this)
     });
   },
 
@@ -50,22 +65,24 @@ var Game = Class.create({
     var data = Object.toJSON(this.getPiecePositions());
     new Ajax.Request("/play", {
       method: "post",
-      parameters: {pieces: data, game: this.id},
+      parameters: {pieces: data, game: this.id, time: this.last_update},
       onSuccess: function (transport) {
         var data = transport.responseText.evalJSON();
-        if (data.status == "nok") {
+        if (data.error) {
           $('dialogmsg').innerHTML = (data.error ? data.error : "Unknown error");
           $('dialog').setStyle({display:"block"});
         }
         else {
+          // get new board
+          this.handleState(transport);
+
+          // remove pieces that were submitted
           $('tray').select('.piece').each(function (piece) {
             var position = piece.getStorage().get("position");
-            if (position) {
-              piece.remove();
-            }
+            if (position) piece.remove();
           });
         }
-      }
+      }.bind(this)
     });
   },
 

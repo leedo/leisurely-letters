@@ -1,7 +1,8 @@
 ? my ($app, @messages) = @_;
 
-<ul id="messages">
 ? for my $message (reverse @messages) {
-?= $_mt->render_file("message.html", $app, $message);
+<li>
+  <span class="sender"><?= $message->sender ?></span>
+  <?= $message->text ?>
+</li>
 ? }
-</ul>
