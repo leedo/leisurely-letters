@@ -110,6 +110,13 @@ sub play_pieces {
       active_player => ($self->active_player == 1 ? 2 : 1),
       last_update => time,
     });
+    $self->result_source->schema->resultset("Message")->create({
+      sender => $user->display_name,
+      text   => "got $points points",
+      created => time,
+      game => $self->id,
+      type => "status",
+    });
     return 1;
   }
   $board = freeze $board;

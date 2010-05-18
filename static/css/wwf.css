@@ -163,15 +163,26 @@ div#log ul#messages {
   background: #eee;
   overflow: auto;
   list-style: none;
-  font-size: 10px;
+  font-size: 11px;
 }
 
-div#log ul#messages span.sender {
+div#log ul#messages li.status {
+  color: #fff;
+  text-align: right;
+  background: #bbb;
+  border-bottom: 1px solid #fff;
+}
+
+li.dialog span.sender {
   font-weight: bold;
 }
 
+li.dialog span.sender:after {
+  content: ": ";
+}
+
 div#log ul#messages li {
-  padding: 2px 4px;
+  padding: 3px 4px;
 }
 
 table#game_info {

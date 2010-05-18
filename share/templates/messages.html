@@ -1,7 +1,7 @@
 ? my ($app, @messages) = @_;
 
 ? for my $message (reverse @messages) {
-<li>
+<li class="<?= $message->type ?>">
   <span class="sender"><?= $message->sender ?></span>
   <?= $message->text ?>
 </li>
