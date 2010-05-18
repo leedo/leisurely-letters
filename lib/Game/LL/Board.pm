@@ -118,7 +118,7 @@ sub check_grid {
       }
       elsif (!valid_word($current_word)) {
         $error = 1;
-        $self->errormsg("Invalid word");
+        $self->errormsg("Invalid word $current_word");
       }
       elsif ($pointed_word) {
         $points += $word_score * $word_multiplier;
@@ -126,21 +126,25 @@ sub check_grid {
       }
       $reset_word->();
     }
+    else {
+      $reset_word->();
+    }
   };
   
   # set initial state values
   $reset_word->();
+  $self->errormsg("");
 
-  for (my $y = 0; $y < 15; $y++) {
-    for (my $x = 0; $x < 15; $x++) {
+  for (my $y = 0; $y < 16; $y++) {
+    for (my $x = 0; $x < 16; $x++) {
       $next_letter->($y, $x);
       return 0 if $error;
     }
     $reset_word->();
   }
 
-  for (my $x = 0; $x < 15; $x++) {
-    for (my $y = 0; $y < 15; $y++) {
+  for (my $x = 0; $x < 16; $x++) {
+    for (my $y = 0; $y < 16; $y++) {
       $next_letter->($y, $x);
       return 0 if $error;
     }
