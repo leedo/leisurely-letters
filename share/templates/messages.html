@@ -1,6 +1,6 @@
-? my ($app, @messages) = @_;
+? my ($app, $messages) = @_;
 
-? for my $message (reverse @messages) {
+? while (my $message = $messages->next) {
 <li class="<?= $message->type ?>">
   <span class="sender"><?= $message->sender ?></span>
   <?= $message->text ?>
