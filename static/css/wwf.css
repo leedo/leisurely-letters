@@ -70,7 +70,7 @@ div#header {
 div#header h1 {
   text-align: left;
   float: right;
-  width: 268px;
+  width: 264px;
   margin: 0;
   text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
   padding: 0;
@@ -135,7 +135,6 @@ input#user_search.empty {
 div#log {
   float: right;
   width: 243px;
-  margin-top: 25px;
 }
 
 div#log input[type="text"] {
@@ -198,7 +197,14 @@ table#game_info tr.active td {
   color: #000;
 }
 
-table#game_info tr td:first-child {
+table#game_info tr td.letters_left {
+  color: #000;
+  font-size: 11px;
+  font-weight: normal;
+  text-align: right;
+}
+
+table#game_info tr td.score {
   background: #5C7C4C;
   font-family: monospace;
   color: #fff;
@@ -423,4 +429,3 @@ p#create_game {
   margin-right: -20px;
   margin-bottom: 30px;
 }
-

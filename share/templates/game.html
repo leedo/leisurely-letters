@@ -1,7 +1,7 @@
 ? my ($app, $user, $game, $board) = @_;
 ? my @letters = $game->player_letters($user);
 
-<?= $_mt->render_file("game_info.html", $app, $user, $game) ?>
+<?= $_mt->render_file("game_info.html", $app, $user, $game, $board) ?>
 <?= $_mt->render_file("board.html", $app, $board) ?>
 
 <div id="dialog">
