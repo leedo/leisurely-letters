@@ -300,7 +300,9 @@ div.piece {
 }
 
 table#tray div.piece.trade {
-  background: green;
+  border: 2px solid #b96160;
+  border-bottom: 2px solid #9c0200;
+  border-right: 2px solid #9c0200;
 }
 
 table#tray div.piece {
@@ -308,6 +310,9 @@ table#tray div.piece {
 }
 table#tray div.piece:hover {
   cursor: move;
+}
+table#tray.trading div.piece:hover {
+  cursor: pointer;
 }
 
 div.piece span.letter_score {
