@@ -9,6 +9,11 @@ __PACKAGE__->add_columns(
     is_nullable => 0,
     is_auto_increment => 1,
   },
+  turn_count => {
+    data_type => "integer",
+    is_nullable => 0,
+    default_value => 1,
+  },
   last_update => {
     data_type => "integer",
     is_nullable => 0,
@@ -109,6 +114,7 @@ sub play_pieces {
       $score => $self->$score + $points,
       active_player => ($self->active_player == 1 ? 2 : 1),
       last_update => time,
+      turn_count => $self->turn_count + 1,
     });
     $self->result_source->schema->resultset("Message")->create({
       sender => $user->display_name,
@@ -133,6 +139,7 @@ sub player_passed {
   my ($self, $user) = @_;
   $self->update({
     active_player => ($self->active_player == 1 ? 2 : 1),
+    turn_count => $self->turn_count + 1,
     last_update => time,
   }); 
   $self->result_source->schema->resultset("Message")->create({
@@ -158,6 +165,7 @@ sub trade_letters {
     active_player => ($self->active_player == 1 ? 2 : 1),
     $player => join("", @letters),
     board => freeze($board),
+    turn_count => $self->turn_count + 1,
   });
   $self->result_source->schema->resultset("Message")->create({
     sender => $user->display_name,
