@@ -125,6 +125,7 @@ var Game = Class.create({
       for (var i = 0; i < tds.length; i++) {
         if (!tds[i].down(".piece")) {
           tds[i].insert(piece);
+          new Effect.Highlight(tds[i].down(".piece"));
           this.makeDraggable(tds[i].down(".piece"));
           break;
         }

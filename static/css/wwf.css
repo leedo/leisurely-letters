@@ -295,6 +295,9 @@ div.piece {
   z-index: 400;
 }
 
+table#tray div.piece {
+  background: #fff;
+}
 table#tray div.piece:hover {
   cursor: move;
 }
