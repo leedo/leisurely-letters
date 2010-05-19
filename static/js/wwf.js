@@ -18,7 +18,9 @@ var Game = Class.create({
 
   recallPieces: function () {
     this.tray.select('.piece').each(function (piece) {
-      var home = piece.getStorage().get("home");
+      var storage = piece.getStorage();
+      storage.unset("position");
+      var home = storage.get("home");
       if (home) {
         piece.setStyle({top: home.top+"px", left: home.left+"px"});
       }
