@@ -183,4 +183,13 @@ sub errormsg {
   return $board->errormsg;
 }
 
+sub last_msgid {
+  my $self = shift;
+  my $messages = $self->messages->search(undef, {order_by => {-desc => 'id'}});
+  if (my $msg = $messages->first) {
+    return $msg->id;
+  }
+  return 0;
+}
+
 1;

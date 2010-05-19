@@ -1,9 +1,9 @@
 var Game = Class.create({
-  initialize: function (id, last_update, your_turn, turn_count) {
+  initialize: function (id, your_turn, turn_count, last_msgid) {
     this.id = id;
-    this.last_update = last_update;
     this.your_turn = your_turn;
     this.turn_count = turn_count;
+    this.last_msgid = last_msgid;
     this.tray = $('tray');
     this.board = $('board');
     this.say = $('log_input');
@@ -78,7 +78,7 @@ var Game = Class.create({
   pollState: function () {
     new Ajax.Request("/game/"+this.id+"/state", {
       method: "post",
-      parameters: {turn: this.turn_count, time: this.last_update},
+      parameters: {turn: this.turn_count, msgid: this.last_msgid},
       onSuccess: function (transport) {
         if (!this.submitting)
           this.handleState(transport);
@@ -88,10 +88,10 @@ var Game = Class.create({
 
   handleState: function (transport) {
     var data = transport.responseText.evalJSON();
+    if (data.last_msgid)
+      this.last_msgid = data.last_msgid;
     if (data.turn_count)
       this.turn_count = data.turn_count;
-    if (data.last_update)
-      this.last_update = data.last_update
     if (data.messages)
       $('messages').insert({top:data.messages});
     if (data.board) {
@@ -124,7 +124,7 @@ var Game = Class.create({
     this.submitting = true;
     new Ajax.Request("/say", {
       method: "post",
-      parameters: {message: message, game: this.id, time: this.last_update, turn: this.turn_count},
+      parameters: {message: message, game: this.id, msgid: this.last_msgid, turn: this.turn_count},
       onSuccess: function (transport) {
         this.handleState(transport);
         this.submitting = false;
@@ -148,7 +148,7 @@ var Game = Class.create({
     this.submitting = true;
     new Ajax.Request("/play", {
       method: "post",
-      parameters: {pieces: data, game: this.id, time: this.last_update, turn: this.turn_count},
+      parameters: {pieces: data, game: this.id, msgid: this.last_msgid, turn: this.turn_count},
       onError: function (transport) {
         this.submitting = false;
         this.displayDialog("Error submitting letters :-(");
@@ -179,7 +179,7 @@ var Game = Class.create({
     event.stop();
     new Ajax.Request("/play", {
       method: "post",
-      parameters: {pass: true, game: this.id, time: this.last_update, turn: this.turn_count},
+      parameters: {pass: true, game: this.id, msgid: this.last_msgid, turn: this.turn_count},
       onError: function (transport) {
         this.submitting = false;
         this.displayDialog("Error passing turn :-(");
@@ -209,7 +209,7 @@ var Game = Class.create({
 
     new Ajax.Request("/play", {
       method: "post",
-      parameters: {trade: letters, game: this.id, time: this.last_update, turn: this.turn_count},
+      parameters: {trade: letters, game: this.id, msgid: this.last_msgid, turn: this.turn_count},
       onError: function (transport) {
         this.cancelTrade();
         this.submitting = false;
