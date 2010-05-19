@@ -12,11 +12,46 @@ var Game = Class.create({
     this.startPoll();
     $('recall').observe("click", this.recallPieces.bind(this));
     $('submit').observe("click", this.submitLetters.bind(this));
+    $('pass').observe("click", this.passTurn.bind(this));
+    $('trade').observe("click", this.startTrade.bind(this));
     $('dialog').down("button").observe("click", function(){$('dialog').hide()});
+    $('cancel_trade').observe("click", this.cancelTrade.bind(this));
+    $('finish_trade').observe("click", this.tradeLetters.bind(this));
     $('log_input').observe("submit", this.submitMessage.bind(this));
   },
 
-  recallPieces: function () {
+  cancelTrade: function (event) {
+    if (event) event.stop();
+    $('submit').disabled = null;
+    $('pass').disabled = null;
+    $('trade').disabled = null;
+    $('finish_trade').disabled = "disabled";
+    $('cancel_trade').disabled = "disabled";
+    this.tray.select(".piece").each(function (piece) {
+      piece.removeClassName("trade");
+      piece.stopObserving("click", this.handleTradeClick);
+    }.bind(this));
+  },
+
+  handleTradeClick: function (event) {
+    var piece = event.findElement(".piece");
+    piece.addClassName("trade");
+  },
+
+  startTrade: function (event) {
+    event.stop();
+    $('submit').disabled = "disabled";
+    $('pass').disabled = "disabled";
+    $('trade').disabled = "disabled";
+    $('finish_trade').disabled = null;
+    $('cancel_trade').disabled = null;
+    this.tray.select(".piece").each(function (piece) {
+      piece.observe("click", this.handleTradeClick);
+    }.bind(this));
+  },
+
+  recallPieces: function (event) {
+    event.stop();
     this.tray.select('.piece').each(function (piece) {
       var storage = piece.getStorage();
       storage.unset("position");
@@ -59,9 +94,13 @@ var Game = Class.create({
     if (data.your_turn != this.your_turn) {
       if (data.your_turn) {
         $('submit').disabled = null;
+        $('trade').disabled = null;
+        $('pass').disabled = null;
         document.title = "(!) Leisurely Letters";
       } else {
         $('submit').disabled = "disabled";
+        $('trade').disabled = "disabled";
+        $('pass').disabled = "disabled";
         document.title = "Leisurely Letters";
       }
     }
@@ -89,7 +128,12 @@ var Game = Class.create({
 
   submitLetters: function (event) {
     event.stop();
-    var data = Object.toJSON(this.getPiecePositions());
+    var positions = this.getPiecePositions();
+    if (!positions.length) {
+      this.displayDialog("No letters to submit");
+      return;
+    }
+    var data = Object.toJSON(positions);
     this.submitting = true;
     new Ajax.Request("/play", {
       method: "post",
@@ -113,6 +157,63 @@ var Game = Class.create({
             if (position) piece.remove();
           });
 
+          if (data.letters) this.updateLetters(data.letters);
+        }
+        this.submitting = false;
+      }.bind(this)
+    });
+  },
+
+  passTurn: function (event) {
+    event.stop();
+    new Ajax.Request("/play", {
+      method: "post",
+      parameters: {pass: true, game: this.id, time: this.last_update},
+      onError: function (transport) {
+        this.submitting = false;
+        this.displayDialog("Error passing turn :-(");
+      }.bind(this),
+      onSuccess: function (transport) {
+        var data = transport.responseText.evalJSON();
+        if (data.error) {
+          this.displayDialog((data.error ? data.error : "Unkown error"));
+        }
+        else {
+          this.handleState(transport);
+        }
+        this.submitting = false;
+      }.bind(this)
+    });
+  },
+
+  tradeLetters: function (event) {
+    event.stop();
+    var letters = this.getTradedLetters();
+    if (!letters.length) {
+      this.displayDialog("No letters to trade");
+      return;
+    }
+    letters = Object.toJSON(letters);
+    this.submitting = true;
+
+    new Ajax.Request("/play", {
+      method: "post",
+      parameters: {trade: letters, game: this.id, time: this.last_update},
+      onError: function (transport) {
+        this.cancelTrade();
+        this.submitting = false;
+        this.displayDialog("Error trading letters :-(");
+      }.bind(this),
+      onSuccess: function (transport) {
+        var data = transport.responseText.evalJSON();
+        if (data.error) {
+          this.displayDialog((data.error ? data.error : "Unkown error"));
+        }
+        else {
+          this.handleState(transport);
+          $('tray').select('.piece.trade').invoke("remove");
+          $('finish_trade').disabled = "disabled";
+          $('cancel_trade').disabled = "disabled";
           if (data.letters) this.updateLetters(data.letters);
         }
         this.submitting = false;
@@ -156,6 +257,12 @@ var Game = Class.create({
       }
     });
     return played_pieces;
+  },
+
+  getTradedLetters: function () {
+    return this.tray.select(".piece.trade").collect(function (piece) {
+      return piece.down("input").value;
+    });
   },
 
   makeDraggable: function (piece) {

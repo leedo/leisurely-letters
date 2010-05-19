@@ -35,12 +35,19 @@
 </tr>
 </table>
 
-<button id="recall">Recall</button>
-<button id="submit"<?= $game->is_current_player($user) ? "" : " disabled"?>>Submit Letters</button>
+? my $active = $game->is_current_player($user);
+<div id="controls">
+  <button id="recall">Recall</button>
+  <button id="trade"<?= $active ? "" : " disabled"?>>Trade</button>
+  <button id="pass"<?= $active ? "" : " disabled"?>>Pass</button>
+  <button id="submit"<?= $active ? "" : " disabled"?>>Submit Letters</button>
+  <button id="finish_trade" disabled>Complete</button>
+  <button id="cancel_trade" disabled>Cancel</button>
+</div>
 
 <script type="text/javascript">
   document.observe("dom:loaded", function () {
     Object.extend(Game, {letter_scores: <?= $board->json_letter_scores ?>});
-    var game = new Game(<?= $game->id ?>, <?= time ?>);
+    var game = new Game(<?= $game->id ?>, <?= time ?>, <?= $active ? 1 : 0 ?>);
   });
 </script>
