@@ -76,20 +76,23 @@ sub BUILD {
 sub handle_state {
   my ($self, $req, $user, $gameid) = @_;
   my $game = $self->schema->resultset("Game")->find($gameid);
+  return $self->not_found($req) unless $game;
   my $state = {
     your_turn => $game->is_current_player($user) ? 1 : 0,
   };
   my $time = $req->parameters->{time};
+  my $turn = $req->parameters->{turn};
   my @messages = $game->messages->search({created => {">" => $time}});
   if (@messages) {
     $state->{messages} = $self->render_section("messages", @messages);
   }
-  if ($game->last_update > $time) {
+  if ($game->turn_count > $turn) {
     $state->{board} = $self->render_section("board", thaw $game->board);
     $state->{game_info} = $self->render_section("game_info", $user, $game);
     $state->{letters} = [$game->player_letters($user)];
   }
   $state->{last_update} = time;
+  $state->{turn_count} = $game->turn_count;
   return $self->respond($state);
 }
 
@@ -152,6 +155,7 @@ sub new_game {
       my $board = Game::LL::Board->new;
       my $game = $self->schema->resultset("Game")->create({
         last_update => time,
+        turn_count => 1,
         p1 => $user->id,
         p2 => $opponent->id,
         p1_letters => join("", $board->take_letters(7)),

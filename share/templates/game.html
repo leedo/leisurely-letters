@@ -48,6 +48,6 @@
 <script type="text/javascript">
   document.observe("dom:loaded", function () {
     Object.extend(Game, {letter_scores: <?= $board->json_letter_scores ?>});
-    var game = new Game(<?= $game->id ?>, <?= time ?>, <?= $active ? 1 : 0 ?>);
+    var game = new Game(<?= $game->id ?>, <?= time ?>, <?= $active ? 1 : 0 ?>, <?= $game->turn_count ?>);
   });
 </script>

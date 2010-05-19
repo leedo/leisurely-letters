@@ -2,7 +2,7 @@ package Game::LL::Schema;
 
 use base "DBIx::Class::Schema";
 
-our $VERSION = "0.01";
+our $VERSION = "0.02";
 
 __PACKAGE__->load_classes(qw/User Game Message/);
 
