@@ -87,8 +87,9 @@ sub handle_state {
     $state->{messages} = $self->render_section("messages", @messages);
   }
   if ($game->turn_count > $turn) {
-    $state->{board} = $self->render_section("board", thaw $game->board);
-    $state->{game_info} = $self->render_section("game_info", $user, $game);
+    my $board = thaw $game->board;
+    $state->{board} = $self->render_section("board", $board);
+    $state->{game_info} = $self->render_section("game_info", $user, $game, $board);
     $state->{letters} = [$game->player_letters($user)];
   }
   $state->{last_update} = time;
