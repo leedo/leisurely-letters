@@ -232,6 +232,11 @@ table#board td {
   -webkit-border-radius: 3px;
 }
 
+table#board td.hover {
+  border-bottom: 1px solid #999;
+  border-right: 1px solid #999;
+}
+
 table#board td.empty.wordX3 {
   background: #e98a4c;
 }
@@ -326,6 +331,12 @@ button {
   padding: 5px 10px;
 }
 
+button#recall {
+  position: absolute;
+  right: 20px;
+  bottom: 100px;
+}
+
 button#submit {
   position: absolute;
   bottom: 75px;
@@ -400,3 +411,4 @@ p#create_game {
   margin-right: -20px;
   margin-bottom: 30px;
 }
+

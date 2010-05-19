@@ -10,9 +10,19 @@ var Game = Class.create({
     this.setupTray();
     this.setupBoard();
     this.startPoll();
+    $('recall').observe("click", this.recallPieces.bind(this));
     $('submit').observe("click", this.submitLetters.bind(this));
     $('dialog').down("button").observe("click", function(){$('dialog').hide()});
     $('log_input').observe("submit", this.submitMessage.bind(this));
+  },
+
+  recallPieces: function () {
+    this.tray.select('.piece').each(function (piece) {
+      var home = piece.getStorage().get("home");
+      if (home) {
+        piece.setStyle({top: home.top+"px", left: home.left+"px"});
+      }
+    });
   },
 
   startPoll: function () {
@@ -157,19 +167,24 @@ var Game = Class.create({
   },
 
   setupTray: function () {
-    this.tray.select(".piece").each(this.makeDraggable);
+    this.tray.select(".piece").each(function (piece) {
+      var storage = piece.getStorage();
+      storage.set("home", piece.positionedOffset());
+      this.makeDraggable(piece);
+    }.bind(this));
   },
 
   setupBoard: function () {
     $('board').select(".empty").each(function(cell) {
       Droppables.add(cell, {
         accept: "piece",
+        hoverclass: "hover",
         onDrop: function (piece, cell, event) {
-          var position = piece.positionedOffset();
-          var cumulative = piece.cumulativeOffset();
-          var cell_cumulative = cell.cumulativeOffset();
-          var top_diff = cumulative.top - cell_cumulative.top - 1;
-          var left_diff = cumulative.left - cell_cumulative.left - 1;
+          var position = piece.positionedOffset(),
+              cumulative = piece.cumulativeOffset(),
+              cell_cumulative = cell.cumulativeOffset();
+          var top_diff = cumulative.top - cell_cumulative.top - 1,
+              left_diff = cumulative.left - cell_cumulative.left - 1;
           var storage = piece.getStorage();
           var y = cell.up("tr").previousSiblings().length;
           var x = cell.previousSiblings().length;
