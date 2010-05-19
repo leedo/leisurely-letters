@@ -80,12 +80,11 @@ sub handle_state {
   my $state = {
     your_turn => $game->is_current_player($user) ? 1 : 0,
   };
-  my $msgid = $req->parameters->{msgid};
-  my $turn = $req->parameters->{turn};
-  my $messages = $game->messages->search({id => {">" => $msgid}},{order_by => {-desc => 'id'}});
-  if ($messages) {
+  my $msgid = $req->parameters->{msgid} || 0;
+  my $turn = $req->parameters->{turn} || 1;
+  if (my $messages = $game->sorted_messages($msgid)) {
     $state->{messages} = $self->render_section("messages", $messages);
-    $state->{last_msgid} = $messages->first ? $messages->first->id : 0;
+    $state->{last_msgid} = $messages->first->id;
   }
   if ($game->turn_count > $turn) {
     my $board = thaw $game->board;

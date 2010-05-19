@@ -185,11 +185,18 @@ sub errormsg {
 
 sub last_msgid {
   my $self = shift;
-  my $messages = $self->messages->search(undef, {order_by => {-desc => 'id'}});
+  my $messages = $self->sorted_messages;
   if (my $msg = $messages->first) {
     return $msg->id;
   }
   return 0;
+}
+
+sub sorted_messages {
+  my ($self, $msgid) = @_;
+  $msgid ||= 0;
+  my $messages = $self->messages->search({id => {">" => $msgid}},{order_by => {-desc => 'id'}});
+  return $messages;
 }
 
 1;
