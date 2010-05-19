@@ -15,7 +15,7 @@
     <button type="submit">Say</button>
   </form>
   <ul id="messages">
-  <?= $_mt->render_file("messages.html", $app, scalar $game->messages) ?>
+  <?= $_mt->render_file("messages.html", $app, $game->sorted_messages) ?>
   </ul>
 </div>
 
