@@ -267,9 +267,8 @@ table#board td span.multiplier {
 }
 
 table#tray {
-  position: absolute;
-  bottom: 20px;
-  right: 15px;
+  float: right;
+  margin: 10px 0 15px 0;
 }
 
 
@@ -298,6 +297,10 @@ div.piece {
   background: #eee;
   font-weight: bold;
   z-index: 400;
+}
+
+table#tray div.piece.trade {
+  background: green;
 }
 
 table#tray div.piece {
@@ -331,18 +334,22 @@ button {
   padding: 5px 10px;
 }
 
-button#recall {
-  position: absolute;
-  right: 20px;
-  bottom: 100px;
+div#controls {
+  float: right;
+  width: 241px;
+}
+
+div#controls button {
+  float: left;
+  margin-right: 5px;
 }
 
 button#submit {
-  position: absolute;
-  bottom: 75px;
-  right: 20px;
-  width: 240px;
-  padding: 5px 10px;
+  float: none;
+  width: 100%;
+  margin-left: 0;
+  clear: both;
+  margin-top: 5px;
 }
 
 button:hover {

@@ -56,6 +56,11 @@ sub take_letters {
   return splice @{$self->letters}, 0, $count;
 }
 
+sub return_letters {
+  my ($self, @letters) = @_;
+  push @{$self->letters}, shuffle @letters;
+}
+
 sub play_letters {
   my ($self, @letters) = @_;
   my $clone = $self->clone_grid;

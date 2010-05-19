@@ -129,6 +129,32 @@ sub opponent {
   return $self->p1->id == $user->id ? $self->p2 : $self->p1;
 }
 
+sub player_passed {
+  my $self = shift;
+  $self->update({
+    active_player => ($self->active_player == 1 ? 2 : 1),
+    last_update => time,
+  }); 
+}
+
+sub trade_letters {
+  my ($self, $user, @traded_letters) = @_;
+  my $board = thaw $self->board;
+  return 0 if $board->letters_left < scalar @traded_letters;
+
+  my @letters = $self->remove_user_letters($user, @traded_letters);
+  push @letters, $board->take_letters(scalar @traded_letters);
+  $board->return_letters(@traded_letters);
+  my $player = "p".$self->active_player."_letters";
+  $self->update({
+    last_update => time,
+    active_player => ($self->active_player == 1 ? 2 : 1),
+    $player => join("", @letters),
+    board => freeze($board),
+  });
+  return 1;
+}
+
 sub errormsg {
   my $self = shift;
   my $board = thaw $self->board;

@@ -97,10 +97,21 @@ sub handle_turn {
   my ($self, $req, $user) = @_;
   my $gameid = $req->parameters->{game};
   my $game = $self->schema->resultset("Game")->find($gameid);
-  my $pieces = from_json($req->parameters->{pieces});
-  my $res = $req->new_response(200);
-  if ($game and $pieces) {
-    if ($game->play_pieces($user, @$pieces)) {
+  return $self->not_found($req) unless $game;
+
+  if ($req->parameters->{pass}) {
+    $game->player_passed();
+    return $self->handle_state($req, $user, $gameid);
+  }
+  elsif ($req->parameters->{trade}) {
+    my $letters = from_json($req->parameters->{trade});
+    if ($letters and $game->trade_letters($user, @$letters)) {
+      return $self->handle_state($req, $user, $gameid);
+    }
+  }
+  else {
+    my $pieces = from_json($req->parameters->{pieces});
+    if ($pieces and $game->play_pieces($user, @$pieces)) {
       return $self->handle_state($req, $user, $gameid);
     }
   }
