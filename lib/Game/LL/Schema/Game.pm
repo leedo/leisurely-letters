@@ -130,11 +130,18 @@ sub opponent {
 }
 
 sub player_passed {
-  my $self = shift;
+  my ($self, $user) = @_;
   $self->update({
     active_player => ($self->active_player == 1 ? 2 : 1),
     last_update => time,
   }); 
+  $self->result_source->schema->resultset("Message")->create({
+    sender => $user->display_name,
+    text   => "passed",
+    created => time,
+    game => $self->id,
+    type => "status",
+  });
 }
 
 sub trade_letters {
@@ -151,6 +158,13 @@ sub trade_letters {
     active_player => ($self->active_player == 1 ? 2 : 1),
     $player => join("", @letters),
     board => freeze($board),
+  });
+  $self->result_source->schema->resultset("Message")->create({
+    sender => $user->display_name,
+    text   => "traded in ".scalar @traded_letters." letters",
+    created => time,
+    game => $self->id,
+    type => "status",
   });
   return 1;
 }

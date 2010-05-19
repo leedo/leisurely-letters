@@ -27,6 +27,7 @@ var Game = Class.create({
     $('trade').disabled = null;
     $('finish_trade').disabled = "disabled";
     $('cancel_trade').disabled = "disabled";
+    $('tray').removeClassName('trading');
     this.tray.select(".piece").each(function (piece) {
       piece.removeClassName("trade");
       piece.stopObserving("click", this.handleTradeClick);
@@ -35,7 +36,12 @@ var Game = Class.create({
 
   handleTradeClick: function (event) {
     var piece = event.findElement(".piece");
-    piece.addClassName("trade");
+    if (piece) {
+      if (piece.hasClassName("trade"))
+        piece.removeClassName("trade");
+      else
+        piece.addClassName("trade");
+    }
   },
 
   startTrade: function (event) {
@@ -45,6 +51,7 @@ var Game = Class.create({
     $('trade').disabled = "disabled";
     $('finish_trade').disabled = null;
     $('cancel_trade').disabled = null;
+    $('tray').addClassName("trading");
     this.tray.select(".piece").each(function (piece) {
       piece.observe("click", this.handleTradeClick);
     }.bind(this));
@@ -211,9 +218,15 @@ var Game = Class.create({
         }
         else {
           this.handleState(transport);
-          $('tray').select('.piece.trade').invoke("remove");
+          $('tray').select('.piece').each(function (piece){
+            if (piece.hasClassName("trade"))
+              piece.remove();
+            else
+              piece.stopObserving("click", this.handleTradeClick);
+          });
           $('finish_trade').disabled = "disabled";
           $('cancel_trade').disabled = "disabled";
+          $('tray').removeClassName('trading');
           if (data.letters) this.updateLetters(data.letters);
         }
         this.submitting = false;
@@ -238,8 +251,10 @@ var Game = Class.create({
       for (var i = 0; i < tds.length; i++) {
         if (!tds[i].down(".piece")) {
           tds[i].insert(piece);
-          new Effect.Highlight(tds[i].down(".piece"));
-          this.makeDraggable(tds[i].down(".piece"));
+          var piece = tds[i].down(".piece");
+          new Effect.Highlight(piece);
+          piece.getStorage().set("home", piece.positionedOffset());
+          this.makeDraggable(piece);
           break;
         }
       }

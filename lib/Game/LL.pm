@@ -100,7 +100,7 @@ sub handle_turn {
   return $self->not_found($req) unless $game;
 
   if ($req->parameters->{pass}) {
-    $game->player_passed();
+    $game->player_passed($user);
     return $self->handle_state($req, $user, $gameid);
   }
   elsif ($req->parameters->{trade}) {
