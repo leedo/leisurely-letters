@@ -32,22 +32,11 @@
   <button id="trade"<?= $active ? "" : " disabled"?>>Trade</button>
   <button id="pass"<?= $active ? "" : " disabled"?>>Pass</button>
   <button id="forfeit"<?= $active ? "" : " disabled"?>>Forfeit</button>
-  <button id="submit"<?= $active ? "" : " disabled"?>>Submit Letters</button>
   <button id="finish_trade" disabled>Complete</button>
   <button id="cancel_trade" disabled>Cancel</button>
+  <button id="submit"<?= $active ? "" : " disabled"?>>Submit Letters</button>
 </div>
 ? }
-
-<div id="log">
-  <form method="post" id="log_input">
-    <input id="message" type="text" name="message" value="" />
-    <button type="submit">Say</button>
-  </form>
-  <ul id="messages">
-  <?= $_mt->render_file("messages.html", $app, $game->sorted_messages) ?>
-  </ul>
-</div>
-
 
 <div id="log">
   <form method="post" id="log_input">
