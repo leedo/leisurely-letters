@@ -9,6 +9,8 @@
   <button>Close</button>
 </div>
 
+? my $active = $game->is_current_player($user);
+? if (!$game->completed) {
 <table id="tray">
   <tr>
   <?
@@ -25,15 +27,27 @@
 </tr>
 </table>
 
-? my $active = $game->is_current_player($user);
 <div id="controls">
   <button id="recall">Recall</button>
   <button id="trade"<?= $active ? "" : " disabled"?>>Trade</button>
   <button id="pass"<?= $active ? "" : " disabled"?>>Pass</button>
+  <button id="forfeit"<?= $active ? "" : " disabled"?>>Forfeit</button>
   <button id="submit"<?= $active ? "" : " disabled"?>>Submit Letters</button>
   <button id="finish_trade" disabled>Complete</button>
   <button id="cancel_trade" disabled>Cancel</button>
 </div>
+? }
+
+<div id="log">
+  <form method="post" id="log_input">
+    <input id="message" type="text" name="message" value="" />
+    <button type="submit">Say</button>
+  </form>
+  <ul id="messages">
+  <?= $_mt->render_file("messages.html", $app, $game->sorted_messages) ?>
+  </ul>
+</div>
+
 
 <div id="log">
   <form method="post" id="log_input">
@@ -49,7 +63,7 @@
 <script type="text/javascript">
   document.observe("dom:loaded", function () {
     Object.extend(Game, {letter_scores: <?= $board->json_letter_scores ?>});
-    var game = new Game(<?= $game->id ?>, <?= $active ? 1 : 0 ?>, <?= $game->turn_count ?>, <?= $game->last_msgid ?>);
+    var game = new Game(<?= $game->id ?>, <?= $active ? 1 : 0 ?>, <?= $game->turn_count ?>, <?= $game->last_msgid ?>, <?= $game->completed ? 1 : 0 ?>);
   });
 </script>
 

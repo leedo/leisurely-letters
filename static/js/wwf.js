@@ -1,24 +1,28 @@
 var Game = Class.create({
-  initialize: function (id, your_turn, turn_count, last_msgid) {
+  initialize: function (id, your_turn, turn_count, last_msgid, completed) {
     this.id = id;
+    this.completed = completed;
     this.your_turn = your_turn;
     this.turn_count = turn_count;
     this.last_msgid = last_msgid;
-    this.tray = $('tray');
-    this.board = $('board');
     this.say = $('log_input');
     this.submitting = false;
-    this.setupTray();
-    this.setupBoard();
-    this.startPoll();
-    $('recall').observe("click", this.recallPieces.bind(this));
-    $('submit').observe("click", this.submitLetters.bind(this));
-    $('pass').observe("click", this.passTurn.bind(this));
-    $('trade').observe("click", this.startTrade.bind(this));
-    $('dialog').down("button").observe("click", function(){$('dialog').hide()});
-    $('cancel_trade').observe("click", this.cancelTrade.bind(this));
-    $('finish_trade').observe("click", this.tradeLetters.bind(this));
+    if (!this.completed) {
+      this.tray = $('tray');
+      this.board = $('board');
+      this.setupTray();
+      this.setupBoard();
+      $('recall').observe("click", this.recallPieces.bind(this));
+      $('submit').observe("click", this.submitLetters.bind(this));
+      $('pass').observe("click", this.passTurn.bind(this));
+      $('forfeit').observe("click", this.forfeitGame.bind(this));
+      $('trade').observe("click", this.startTrade.bind(this));
+      $('dialog').down("button").observe("click", function(){$('dialog').hide()});
+      $('cancel_trade').observe("click", this.cancelTrade.bind(this));
+      $('finish_trade').observe("click", this.tradeLetters.bind(this));
+    }
     $('log_input').observe("submit", this.submitMessage.bind(this));
+    this.startPoll();
   },
 
   cancelTrade: function (event) {
@@ -114,6 +118,13 @@ var Game = Class.create({
         $('pass').disabled = "disabled";
       }
     }
+    if (data.completed) {
+      this.completed = true;
+      ["recall","submit","trade","pass","forfeit","finish_trade","cancel_trade","tray"].each(function(button) {
+        $(button).remove();
+      });
+      $('letters_left').innerHTML = "Game over, man.";
+    }
     this.your_turn = data.your_turn;
   },
 
@@ -122,9 +133,9 @@ var Game = Class.create({
     var message = $('message').value;
     $('message').value = "";
     this.submitting = true;
-    new Ajax.Request("/say", {
+    new Ajax.Request("/game/"+this.id+"/say", {
       method: "post",
-      parameters: {message: message, game: this.id, msgid: this.last_msgid, turn: this.turn_count},
+      parameters: {message: message, msgid: this.last_msgid, turn: this.turn_count},
       onSuccess: function (transport) {
         this.handleState(transport);
         this.submitting = false;
@@ -146,9 +157,9 @@ var Game = Class.create({
     }
     var data = Object.toJSON(positions);
     this.submitting = true;
-    new Ajax.Request("/play", {
+    new Ajax.Request("/game/"+this.id+"/play", {
       method: "post",
-      parameters: {pieces: data, game: this.id, msgid: this.last_msgid, turn: this.turn_count},
+      parameters: {pieces: data, msgid: this.last_msgid, turn: this.turn_count},
       onError: function (transport) {
         this.submitting = false;
         this.displayDialog("Error submitting letters :-(");
@@ -175,11 +186,33 @@ var Game = Class.create({
     });
   },
 
+  forfeitGame: function (event) {
+    event.stop();
+    new Ajax.Request("/game/"+this.id+"/play/", {
+      method: "post",
+      parameters: {forfeit: true, msgid: this.last_msgid, turn: this.turn_count},
+      onErrror: function (transport) {
+        this.submitting = false;
+        this.displayDialog("Error forfeiting :-(");
+      }.bind(this),
+      onSuccess: function (transport) {
+        var data = transport.responseText.evalJSON();
+        if (data.error) {
+          this.displayDialog((data.error ? data.error : "Unkown error"));
+        }
+        else {
+          this.handleState(transport);
+        }
+        this.submitting = false;
+      }.bind(this)
+    });
+  },
+
   passTurn: function (event) {
     event.stop();
-    new Ajax.Request("/play", {
+    new Ajax.Request("/game/"+this.id+"/play", {
       method: "post",
-      parameters: {pass: true, game: this.id, msgid: this.last_msgid, turn: this.turn_count},
+      parameters: {pass: true, msgid: this.last_msgid, turn: this.turn_count},
       onError: function (transport) {
         this.submitting = false;
         this.displayDialog("Error passing turn :-(");
@@ -207,9 +240,9 @@ var Game = Class.create({
     letters = Object.toJSON(letters);
     this.submitting = true;
 
-    new Ajax.Request("/play", {
+    new Ajax.Request("/game/"+this.id+"/play", {
       method: "post",
-      parameters: {trade: letters, game: this.id, msgid: this.last_msgid, turn: this.turn_count},
+      parameters: {trade: letters, msgid: this.last_msgid, turn: this.turn_count},
       onError: function (transport) {
         this.cancelTrade();
         this.submitting = false;
