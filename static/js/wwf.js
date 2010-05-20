@@ -109,7 +109,7 @@ var Game = Class.create({
     }
     if (data.your_turn != this.your_turn) {
       if (data.your_turn) {
-        document.title = "(!) Leisurely Letters";
+        document.title = "! Leisurely Letters";
         $('submit').disabled = null;
         $('trade').disabled = null;
         $('pass').disabled = null;
@@ -192,6 +192,9 @@ var Game = Class.create({
 
   forfeitGame: function (event) {
     event.stop();
+    if (!confirm("Are you sure you want to forfeit?")) {
+      return;
+    }
     new Ajax.Request("/game/"+this.id+"/play/", {
       method: "post",
       parameters: {forfeit: true, msgid: this.last_msgid, turn: this.turn_count},
