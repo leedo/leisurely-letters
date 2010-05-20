@@ -9,16 +9,6 @@
   <button>Close</button>
 </div>
 
-<div id="log">
-  <form method="post" id="log_input">
-    <input id="message" type="text" name="message" value="" />
-    <button type="submit">Say</button>
-  </form>
-  <ul id="messages">
-  <?= $_mt->render_file("messages.html", $app, $game->sorted_messages) ?>
-  </ul>
-</div>
-
 <table id="tray">
   <tr>
   <?
@@ -45,9 +35,21 @@
   <button id="cancel_trade" disabled>Cancel</button>
 </div>
 
+<div id="log">
+  <form method="post" id="log_input">
+    <input id="message" type="text" name="message" value="" />
+    <button type="submit">Say</button>
+  </form>
+  <ul id="messages">
+  <?= $_mt->render_file("messages.html", $app, $game->sorted_messages) ?>
+  </ul>
+</div>
+
+
 <script type="text/javascript">
   document.observe("dom:loaded", function () {
     Object.extend(Game, {letter_scores: <?= $board->json_letter_scores ?>});
     var game = new Game(<?= $game->id ?>, <?= $active ? 1 : 0 ?>, <?= $game->turn_count ?>, <?= $game->last_msgid ?>);
   });
 </script>
+

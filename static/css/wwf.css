@@ -360,7 +360,12 @@ button#submit {
   width: 100%;
   margin-left: 0;
   clear: both;
-  margin-top: 5px;
+  margin: 5px 0 10px 0;
+}
+
+button#submit[disabled] {
+  display: block;
+  visibility: hidden;
 }
 
 button:hover {
