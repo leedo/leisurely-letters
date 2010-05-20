@@ -23,7 +23,7 @@ form#login {
   display: block;
   background: #fff;
   width: 200px;
-  margin: 0 auto;
+  margin: 20px auto;
 }
 
 form#login input,
@@ -48,6 +48,7 @@ form#login input[type="password"] {
   border-top: 1px solid #ccc;
   border-left: 1px solid #ccc;
   padding: 3px 5px;
+  width: 190px;
 }
 
 form#login button[type="submit"] {
@@ -109,6 +110,8 @@ div#footer {
 div#content {
   width: 800px;
   border: 1px solid #ccc;
+  border-right: 1px solid #bbb;
+  border-bottom: 1px solid #bbb;
   border-top: none;
   padding: 20px;
   margin: 0 auto;
@@ -440,8 +443,9 @@ div.games span.email {
 
 p#create_game {
   background: #999;
+  text-align: center;
   color: #fff;
-  padding: 10px 20px;
+  padding: 20px 20px;
   margin-left: -20px;
   margin-right: -20px;
   margin-bottom: 30px;
