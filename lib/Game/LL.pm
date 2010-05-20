@@ -82,7 +82,8 @@ sub handle_state {
   };
   my $msgid = $req->parameters->{msgid} || 0;
   my $turn = $req->parameters->{turn} || 1;
-  if (my $messages = $game->sorted_messages($msgid)) {
+  my $messages = $game->sorted_messages($msgid);
+  if ($messages->all) {
     $state->{messages} = $self->render_section("messages", $messages);
     $state->{last_msgid} = $messages->first->id;
   }
