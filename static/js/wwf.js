@@ -30,6 +30,7 @@ var Game = Class.create({
     $('submit').disabled = null;
     $('pass').disabled = null;
     $('trade').disabled = null;
+    $('forfeit').disabled = null;
     $('finish_trade').disabled = "disabled";
     $('cancel_trade').disabled = "disabled";
     $('tray').removeClassName('trading');
@@ -54,6 +55,7 @@ var Game = Class.create({
     $('submit').disabled = "disabled";
     $('pass').disabled = "disabled";
     $('trade').disabled = "disabled";
+    $('forfeit').disabled = "disabled";
     $('finish_trade').disabled = null;
     $('cancel_trade').disabled = null;
     $('tray').addClassName("trading");
@@ -80,12 +82,12 @@ var Game = Class.create({
   },
 
   pollState: function () {
+    if (this.submitting) return;
     new Ajax.Request("/game/"+this.id+"/state", {
       method: "post",
       parameters: {turn: this.turn_count, msgid: this.last_msgid},
       onSuccess: function (transport) {
-        if (!this.submitting)
-          this.handleState(transport);
+        if (!this.submitting) this.handleState(transport);
       }.bind(this)
     });
   },
@@ -111,11 +113,13 @@ var Game = Class.create({
         $('submit').disabled = null;
         $('trade').disabled = null;
         $('pass').disabled = null;
+        $('forfeit').disabled = null;
       } else {
         document.title = "Leisurely Letters";
         $('submit').disabled = "disabled";
         $('trade').disabled = "disabled";
         $('pass').disabled = "disabled";
+        $('forfeit').disabled = "disabled";
       }
     }
     if (data.completed) {

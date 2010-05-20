@@ -34,7 +34,7 @@
 ? }
 <li<? if ($game->is_current_player($user)) { ?> class="active"<? } ?>>
   <a href="/game/<?= $game->id ?>">
-    <?= $game->opponent($user)->display_name ?>
+    <?= $game->opponent($user)->display_name ?><br>
     <span class="email"><?= $game->opponent($user)->email ?></span>
   </a>
 </li>
@@ -47,8 +47,8 @@
 <ul>
 ? for my $game (@completed) {
 <li>
-  <a href="/game/<?= $game->id ?>">
-    <?= $game->opponent($user)->display_name ?>
+<a href="/game/<?= $game->id ?>">
+    <?= $game->opponent($user)->display_name ?><br>
     <span class="email"><?= $game->opponent($user)->email ?></span>
   </a>
 </li>
