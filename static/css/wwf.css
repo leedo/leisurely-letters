@@ -239,6 +239,7 @@ table#board td {
   height: 31px;
   background: #fff;
   -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
 }
 
 table#board td.hover {
@@ -299,6 +300,7 @@ div.piece {
   text-align: center;
   position: relative;
   -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
   font-size: 20px;
   line-height: 20px;
   text-transform: uppercase;
@@ -356,12 +358,14 @@ div#controls {
 div#controls button {
   float: left;
   margin-right: 3px;
+  font-size: 8px;
 }
 
 div#controls button#submit {
   width: 100%;
   margin-left: 0;
   margin: 5px 0 10px 0;
+  font-size: 9px;
 }
 
 div#controls button#cancel_trade,
@@ -392,6 +396,7 @@ div#dialog {
   background: #fff;
   border: 3px solid #ccc;
   -webkit-box-shadow: 0 0 10px rgba(0,0,0,0.8);
+  -moz-box-shadow: 0 0 10px rgba(0,0,0,0.8);
 }
 
 div#dialog p {
