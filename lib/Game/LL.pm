@@ -57,8 +57,8 @@ has url_handlers => (
   default => sub {
     [
       ["/", "games"],
-      ["/say", "handle_message"],
-      ["/play", "handle_turn"],
+      [qr{/game/(\d+)/say}, "handle_message"],
+      [qr{^/game/(\d+)/play}, "handle_turn"],
       ["/new", "new_game"],
       ["/games", "games"],
       [qr{^/game/(\d+)/state}, "handle_state"],
@@ -88,6 +88,7 @@ sub handle_state {
   }
   if ($game->turn_count > $turn) {
     my $board = thaw $game->board;
+    $state->{completed} = $board->completed;
     $state->{board} = $self->render_section("board", $board);
     $state->{game_info} = $self->render_section("game_info", $user, $game, $board);
     $state->{letters} = [$game->player_letters($user)];
@@ -97,10 +98,11 @@ sub handle_state {
 }
 
 sub handle_turn {
-  my ($self, $req, $user) = @_;
-  my $gameid = $req->parameters->{game};
+  my ($self, $req, $user, $gameid) = @_;
   my $game = $self->schema->resultset("Game")->find($gameid);
-  return $self->not_found($req) unless $game;
+  unless ($game and !$game->completed) {
+    return $self->respond({error => "Invalid game"});
+  }
 
   if ($req->parameters->{pass}) {
     $game->player_passed($user);
@@ -112,6 +114,10 @@ sub handle_turn {
       return $self->handle_state($req, $user, $gameid);
     }
   }
+  elsif ($req->parameters->{forfeit}) {
+    $game->forfeit_user($user);
+    return $self->handle_state($req, $user, $gameid);
+  }
   else {
     my $pieces = from_json($req->parameters->{pieces});
     if ($pieces and $game->play_pieces($user, @$pieces)) {
@@ -122,8 +128,7 @@ sub handle_turn {
 }
 
 sub handle_message {
-  my ($self, $req, $user) = @_;
-  my $gameid = $req->parameters->{game};
+  my ($self, $req, $user, $gameid) = @_;
   my $game = $self->schema->resultset("Game")->find($gameid);
   my $message = $req->parameters->{message};
   if ($game and $message) {

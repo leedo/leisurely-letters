@@ -1,6 +1,7 @@
 package Game::LL::Schema::Game;
 use base qw/DBIx::Class::Core/;
 use Storable qw/thaw freeze/;
+use List::MoreUtils qw/first_index/;
 
 __PACKAGE__->table('game');
 __PACKAGE__->add_columns(
@@ -58,8 +59,19 @@ __PACKAGE__->add_columns(
     default_value => 1,
     extra => {list => [qw/1 2/]}
   },
+  completed => {
+    data_type => "bool",
+    is_nullable => 0,
+    default_value => 0,
+  },
+  winner => {
+    data_type => "integer",
+    is_nullable => 1,
+    is_foreign_key => 1,
+  },
 );
 __PACKAGE__->set_primary_key('id');
+__PACKAGE__->belongs_to(winner => 'Game::LL::Schema::User');
 __PACKAGE__->belongs_to(p1 => 'Game::LL::Schema::User');
 __PACKAGE__->belongs_to(p2 => 'Game::LL::Schema::User');
 __PACKAGE__->has_many(messages => 'Game::LL::Schema::Message', "game");
@@ -75,19 +87,11 @@ sub player_letters {
 sub remove_user_letters {
   my ($self, $user, @remove) = @_;
   my @letters = $self->player_letters($user);
-  my @new_letters;
-  for my $letter (@letters) {
-    my $remove = 0;
-    for my $rm_idx (0 .. @remove - 1) {
-      if ($remove[$rm_idx] eq $letter) {
-        $remove = 1;
-        splice(@remove, $rm_idx, 1);
-        last;
-      }
-    }
-    push @new_letters, $letter unless $remove;
+  for my $letter (@remove) {
+    my $index = first_index {$_ eq $letter} @letters;
+    splice @letters, $index, 1;
   }
-  return @new_letters;
+  return @letters;
 }
 
 sub is_current_player {
@@ -108,6 +112,8 @@ sub play_pieces {
   if (my $points = $board->play_letters(@pieces)) {
     my @letters = $self->remove_user_letters($user, map {$_->[0]} @pieces);
     push @letters, $board->take_letters(7 - @letters);
+
+    $self->add_status_message($user, "got $points points");
     $self->update({
       board => freeze($board),
       $letters => join("", @letters),
@@ -116,17 +122,18 @@ sub play_pieces {
       last_update => time,
       turn_count => $self->turn_count + 1,
     });
-    $self->result_source->schema->resultset("Message")->create({
-      sender => $user->display_name,
-      text   => "got $points points",
-      created => time,
-      game => $self->id,
-      type => "status",
-    });
+
+    if (!$board->letters_left and !@letters) {
+      $self->add_status_message($user, "won the game!");
+      $self->update({
+        completed => 1,
+        winner => $user->id,
+      });
+    }
+
     return 1;
   }
-  $board = freeze $board;
-  $self->update({board => $board});
+  $self->update({board => freeze $board});
   return 0;
 }
 
@@ -142,19 +149,17 @@ sub player_passed {
     turn_count => $self->turn_count + 1,
     last_update => time,
   }); 
-  $self->result_source->schema->resultset("Message")->create({
-    sender => $user->display_name,
-    text   => "passed",
-    created => time,
-    game => $self->id,
-    type => "status",
-  });
+  $self->add_status_message($user, "passed");
 }
 
 sub trade_letters {
   my ($self, $user, @traded_letters) = @_;
   my $board = thaw $self->board;
-  return 0 if $board->letters_left < scalar @traded_letters;
+  if ($board->letters_left < scalar @traded_letters) {
+    $board->errormsg("Not enough letters left");
+    $self->update({board => freeze $board});
+    return 0;
+  }
 
   my @letters = $self->remove_user_letters($user, @traded_letters);
   push @letters, $board->take_letters(scalar @traded_letters);
@@ -167,13 +172,7 @@ sub trade_letters {
     board => freeze($board),
     turn_count => $self->turn_count + 1,
   });
-  $self->result_source->schema->resultset("Message")->create({
-    sender => $user->display_name,
-    text   => "traded in ".scalar @traded_letters." letters",
-    created => time,
-    game => $self->id,
-    type => "status",
-  });
+  $self->add_status_message($user, "traded in ".scalar @traded_letters." letters");
   return 1;
 }
 
@@ -197,6 +196,29 @@ sub sorted_messages {
   $msgid ||= 0;
   my $messages = $self->messages->search({id => {">" => $msgid}},{order_by => {-desc => 'id'}});
   return $messages;
+}
+
+sub forfeit_user {
+  my ($self, $user) = @_;
+  my $winner = $user->id == $self->p1 ? $self->p2 : $self->p1;
+  $self->update({
+    completed => 1,
+    winner => $winner->id,
+    last_update => time,
+    turn_count => $self->turn_count + 1,
+  });
+  $self->add_status_message($user, "has forfeit the game");
+}
+
+sub add_status_message {
+  my ($self, $user, $message) = @_;
+  $self->result_source->schema->resultset("Message")->create({
+    sender => $user->display_name,
+    text   => $message,
+    created => time,
+    game => $self->id,
+    type => "status",
+  });
 }
 
 1;

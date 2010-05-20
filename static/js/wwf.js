@@ -122,9 +122,9 @@ var Game = Class.create({
     var message = $('message').value;
     $('message').value = "";
     this.submitting = true;
-    new Ajax.Request("/say", {
+    new Ajax.Request("/game/"+this.id+"/say", {
       method: "post",
-      parameters: {message: message, game: this.id, msgid: this.last_msgid, turn: this.turn_count},
+      parameters: {message: message, msgid: this.last_msgid, turn: this.turn_count},
       onSuccess: function (transport) {
         this.handleState(transport);
         this.submitting = false;
@@ -146,9 +146,9 @@ var Game = Class.create({
     }
     var data = Object.toJSON(positions);
     this.submitting = true;
-    new Ajax.Request("/play", {
+    new Ajax.Request("/game/"+this.id+"/play", {
       method: "post",
-      parameters: {pieces: data, game: this.id, msgid: this.last_msgid, turn: this.turn_count},
+      parameters: {pieces: data, msgid: this.last_msgid, turn: this.turn_count},
       onError: function (transport) {
         this.submitting = false;
         this.displayDialog("Error submitting letters :-(");
@@ -177,9 +177,9 @@ var Game = Class.create({
 
   passTurn: function (event) {
     event.stop();
-    new Ajax.Request("/play", {
+    new Ajax.Request("/game/"+this.id+"/play", {
       method: "post",
-      parameters: {pass: true, game: this.id, msgid: this.last_msgid, turn: this.turn_count},
+      parameters: {pass: true, msgid: this.last_msgid, turn: this.turn_count},
       onError: function (transport) {
         this.submitting = false;
         this.displayDialog("Error passing turn :-(");
@@ -207,9 +207,9 @@ var Game = Class.create({
     letters = Object.toJSON(letters);
     this.submitting = true;
 
-    new Ajax.Request("/play", {
+    new Ajax.Request("/game/"+this.id+"/play", {
       method: "post",
-      parameters: {trade: letters, game: this.id, msgid: this.last_msgid, turn: this.turn_count},
+      parameters: {trade: letters, msgid: this.last_msgid, turn: this.turn_count},
       onError: function (transport) {
         this.cancelTrade();
         this.submitting = false;
