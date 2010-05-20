@@ -1,4 +1,5 @@
-? my ($app, $user, @games) = @_;
+? my ($app, $user, $games) = @_;
+? my @completed;
 
 <script type="text/javascript">
   document.observe("dom:loaded", function () {
@@ -23,14 +24,34 @@
   </p>
 </form>
 
+<div class="games">
 <h2>Active Games</h2>
-<ul class="games">
-<? for my $game (@games) { ?>
+<ul>
+? while (my $game = $games->next) {
+? if ($game->completed) {
+?   push @completed, $game;
+?   next;
+? }
 <li<? if ($game->is_current_player($user)) { ?> class="active"<? } ?>>
   <a href="/game/<?= $game->id ?>">
     <?= $game->opponent($user)->display_name ?>
     <span class="email"><?= $game->opponent($user)->email ?></span>
   </a>
 </li>
-<? } ?>
+? }
 </ul>
+</div>
+
+<div class="games">
+<h2>Completed Games</h2>
+<ul>
+? for my $game (@completed) {
+<li>
+  <a href="/game/<?= $game->id ?>">
+    <?= $game->opponent($user)->display_name ?>
+    <span class="email"><?= $game->opponent($user)->email ?></span>
+  </a>
+</li>
+? }
+</ul>
+</div>

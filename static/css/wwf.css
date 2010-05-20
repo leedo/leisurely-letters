@@ -197,7 +197,7 @@ table#game_info tr.active td {
   color: #000;
 }
 
-table#game_info tr td.letters_left {
+table#game_info tr td#letters_left {
   color: #000;
   font-size: 11px;
   font-weight: normal;
@@ -341,7 +341,7 @@ button {
   text-align: center;
   display: block;
   border: none;
-  font-size: 10px;
+  font-size: 9px;
   padding: 5px 10px;
 }
 
@@ -352,14 +352,12 @@ div#controls {
 
 div#controls button {
   float: left;
-  margin-right: 5px;
+  margin-right: 3px;
 }
 
-button#submit {
-  float: none;
+div#controls button#submit {
   width: 100%;
   margin-left: 0;
-  clear: both;
   margin: 5px 0 10px 0;
 }
 
@@ -402,24 +400,33 @@ h2 {
   letter-spacing: 1px;
   font-size: 16px;
   margin: 10px 0;
+  border-bottom: 1px solid #ccc;
 }
 
-ul.games {
+div.games {
+  margin-bottom: 30px;
+}
+div.games ul {
   margin-top: 0;
   list-style: none;
   padding-left: 0;
+  overflow: hidden;
 }
 
-ul.games li {
-  margin: 5px 0;
+div.games li {
+  margin: 5px 10px 5px 0;
+  width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  float: left;
 }
 
-ul.games li.active {
+div.games li.active {
   font-weight: bold;
 }
 
-ul.games li.active span.email,
-ul.games span.email {
+div.games li.active span.email,
+div.games span.email {
   font-weight: normal;
   color: #666;
   text-decoration: none;

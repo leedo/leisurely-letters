@@ -1,24 +1,28 @@
 var Game = Class.create({
-  initialize: function (id, your_turn, turn_count, last_msgid) {
+  initialize: function (id, your_turn, turn_count, last_msgid, completed) {
     this.id = id;
+    this.completed = completed;
     this.your_turn = your_turn;
     this.turn_count = turn_count;
     this.last_msgid = last_msgid;
-    this.tray = $('tray');
-    this.board = $('board');
     this.say = $('log_input');
     this.submitting = false;
-    this.setupTray();
-    this.setupBoard();
-    this.startPoll();
-    $('recall').observe("click", this.recallPieces.bind(this));
-    $('submit').observe("click", this.submitLetters.bind(this));
-    $('pass').observe("click", this.passTurn.bind(this));
-    $('trade').observe("click", this.startTrade.bind(this));
-    $('dialog').down("button").observe("click", function(){$('dialog').hide()});
-    $('cancel_trade').observe("click", this.cancelTrade.bind(this));
-    $('finish_trade').observe("click", this.tradeLetters.bind(this));
+    if (!this.completed) {
+      this.tray = $('tray');
+      this.board = $('board');
+      this.setupTray();
+      this.setupBoard();
+      $('recall').observe("click", this.recallPieces.bind(this));
+      $('submit').observe("click", this.submitLetters.bind(this));
+      $('pass').observe("click", this.passTurn.bind(this));
+      $('forfeit').observe("click", this.forfeitGame.bind(this));
+      $('trade').observe("click", this.startTrade.bind(this));
+      $('dialog').down("button").observe("click", function(){$('dialog').hide()});
+      $('cancel_trade').observe("click", this.cancelTrade.bind(this));
+      $('finish_trade').observe("click", this.tradeLetters.bind(this));
+    }
     $('log_input').observe("submit", this.submitMessage.bind(this));
+    this.startPoll();
   },
 
   cancelTrade: function (event) {
@@ -114,6 +118,13 @@ var Game = Class.create({
         $('pass').disabled = "disabled";
       }
     }
+    if (data.completed) {
+      this.completed = true;
+      ["recall","submit","trade","pass","forfeit","finish_trade","cancel_trade","tray"].each(function(button) {
+        $(button).remove();
+      });
+      $('letters_left').innerHTML = "Game over, man.";
+    }
     this.your_turn = data.your_turn;
   },
 
@@ -169,6 +180,28 @@ var Game = Class.create({
           });
 
           if (data.letters) this.updateLetters(data.letters);
+        }
+        this.submitting = false;
+      }.bind(this)
+    });
+  },
+
+  forfeitGame: function (event) {
+    event.stop();
+    new Ajax.Request("/game/"+this.id+"/play/", {
+      method: "post",
+      parameters: {forfeit: true, msgid: this.last_msgid, turn: this.turn_count},
+      onErrror: function (transport) {
+        this.submitting = false;
+        this.displayDialog("Error forfeiting :-(");
+      }.bind(this),
+      onSuccess: function (transport) {
+        var data = transport.responseText.evalJSON();
+        if (data.error) {
+          this.displayDialog((data.error ? data.error : "Unkown error"));
+        }
+        else {
+          this.handleState(transport);
         }
         this.submitting = false;
       }.bind(this)

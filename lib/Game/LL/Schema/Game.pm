@@ -144,6 +144,7 @@ sub opponent {
 
 sub player_passed {
   my ($self, $user) = @_;
+  return 0 unless $self->is_current_player($user);
   $self->update({
     active_player => ($self->active_player == 1 ? 2 : 1),
     turn_count => $self->turn_count + 1,
@@ -154,6 +155,7 @@ sub player_passed {
 
 sub trade_letters {
   my ($self, $user, @traded_letters) = @_;
+  return 0 unless $self->is_current_player($user);
   my $board = thaw $self->board;
   if ($board->letters_left < scalar @traded_letters) {
     $board->errormsg("Not enough letters left");
@@ -200,6 +202,7 @@ sub sorted_messages {
 
 sub forfeit_user {
   my ($self, $user) = @_;
+  return 0 unless $self->is_current_player($user);
   my $winner = $user->id == $self->p1 ? $self->p2 : $self->p1;
   $self->update({
     completed => 1,

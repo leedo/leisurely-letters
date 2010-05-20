@@ -12,8 +12,12 @@
   </tr>
   <tr>
     <td></td>
-    <td class="letters_left">
+    <td id="letters_left">
+      <? if ($game->completed) { ?>
+      Game over, man.
+      <? } else { ?>
       <?= $board->letters_left ?> letters left
+      <? } ?>
     </td>
   </tr>
 </table>

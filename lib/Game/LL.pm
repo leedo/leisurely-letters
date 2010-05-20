@@ -89,7 +89,7 @@ sub handle_state {
   }
   if ($game->turn_count > $turn) {
     my $board = thaw $game->board;
-    $state->{completed} = $board->completed;
+    $state->{completed} = $game->completed ? 1 : 0;
     $state->{board} = $self->render_section("board", $board);
     $state->{game_info} = $self->render_section("game_info", $user, $game, $board);
     $state->{letters} = [$game->player_letters($user)];
@@ -103,6 +103,10 @@ sub handle_turn {
   my $game = $self->schema->resultset("Game")->find($gameid);
   unless ($game and !$game->completed) {
     return $self->respond({error => "Invalid game"});
+  }
+
+  if (!$game->is_current_player($user)) {
+    return $self->respond({error => "It isn't your turn"});
   }
 
   if ($req->parameters->{pass}) {
@@ -177,10 +181,10 @@ sub new_game {
 
 sub games {
   my ($self, $req, $user) = @_;
-  my @games = $self->schema->resultset("Game")->search([
+  my $games = $self->schema->resultset("Game")->search([
     {p1 => $user->id}, {p2 => $user->id}
   ]);
-  return $self->respond("games", $user, @games);
+  return $self->respond("games", $user, $games);
 }
 
 sub logout {
