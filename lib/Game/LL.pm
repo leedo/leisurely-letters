@@ -42,7 +42,12 @@ has template => (
 
 has share_dir => (
   is => 'ro',
-  default => './share',
+  default => sub {
+    if (-e "./share/TWL06.txt") {
+      return "./share";
+    }
+    return dist_dir("Game-LL");
+  }
 );
 
 has static_prefix => (
