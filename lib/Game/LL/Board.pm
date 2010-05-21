@@ -84,7 +84,8 @@ sub check_grid {
 
   # state variables
   my ($points, $current_word, $word_score, $word_multiplier,
-      $pointed_word, $connected, $error, $valid_start, $_x, $_y);
+      $pointed_word, $connected, $error, $valid_start, $_x, $_y,
+      $any_connected);
 
   my $reset_word = sub {
     $current_word = "";
@@ -117,10 +118,6 @@ sub check_grid {
         $error = 1;
         $self->errormsg("Invalid starting position");
       }
-      elsif ($self->started and !$connected) {
-        $error = 1;
-        $self->errormsg("Word is not connected!");
-      }
       elsif (!valid_word($current_word)) {
         $error = 1;
         $self->errormsg("Invalid word $current_word");
@@ -128,6 +125,7 @@ sub check_grid {
       elsif ($pointed_word) {
         $points += $word_score * $word_multiplier;
         $self->started(1) if !$self->started;
+        $any_connected = 1 if $connected;
       }
       $reset_word->();
     }
@@ -167,6 +165,11 @@ sub check_grid {
       ($_y, $_x) = ($y, $x);
     }
     $reset_word->();
+  }
+
+  if (!$any_connected) {
+    $self->errormsg("Not connected!");
+    return 0;
   }
   
   return $points;
