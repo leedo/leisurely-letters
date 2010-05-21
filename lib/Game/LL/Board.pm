@@ -93,7 +93,6 @@ sub check_grid {
     $word_multiplier = 1;
     $pointed_word = 0;
     $connected = 0;
-    $valid_start = 0;
   };
 
   my $next_letter = sub {
@@ -103,7 +102,6 @@ sub check_grid {
     if ($letter) {
       $current_word .= $letter;
       if (first {$_->[1] == $x and $_->[2] == $y} @letters) {
-        $valid_start = 1 if $x == 7 and $y == 7;
         $pointed_word = 1;
         $word_multiplier *= word_multiplier($y, $x);
         $word_score += letter_score($letter) * letter_multiplier($y, $x);
@@ -114,17 +112,12 @@ sub check_grid {
       }
     }
     elsif ($current_word and length $current_word > 1) {
-      if (!$self->started and !$valid_start) {
-        $error = 1;
-        $self->errormsg("Invalid starting position");
-      }
-      elsif (!valid_word($current_word)) {
+      if (!valid_word($current_word)) {
         $error = 1;
         $self->errormsg("Invalid word $current_word");
       }
       elsif ($pointed_word) {
         $points += $word_score * $word_multiplier;
-        $self->started(1) if !$self->started;
         $any_connected = 1 if $connected;
       }
       $reset_word->();
@@ -143,6 +136,14 @@ sub check_grid {
     }
   };
   
+  if (!$self->started) {
+    my $valid_start = first {$_->[1] == 7 and $_->[2] == 7} @letters;
+    if (!$valid_start) {
+      $self->errormsg("Invalid starting position");
+      return 0;
+    }
+  }
+
   # set initial state values
   $reset_word->();
   $self->errormsg("");
@@ -158,6 +159,7 @@ sub check_grid {
   }
 
   ($_x, $_y) = (0, 0);
+
   for (my $x = 0; $x < 16; $x++) {
     for (my $y = 0; $y < 16; $y++) {
       $next_letter->($y, $x);
@@ -167,11 +169,14 @@ sub check_grid {
     $reset_word->();
   }
 
-  if (!$any_connected) {
+  if ($self->started and !$any_connected) {
     $self->errormsg("Not connected!");
     return 0;
+  } elsif (!$self->started) {
+    $self->started(1);
   }
   
+  $self->errormsg("");
   return $points;
 }
 
