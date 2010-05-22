@@ -180,15 +180,16 @@ sub new_game {
       return $self->redirect("/game/".$game->id) if $game;
     }
   }
-  return $self->redirect("/games");
+  return $self->redirect("/games?baduser=yes");
 }
 
 sub games {
   my ($self, $req, $user) = @_;
+  my $baduser = exists $req->parameters->{baduser};
   my $games = $self->schema->resultset("Game")->search([
     {p1 => $user->id}, {p2 => $user->id}
   ]);
-  return $self->respond("games", $user, $games);
+  return $self->respond("games", $user, $games, $baduser);
 }
 
 sub logout {
