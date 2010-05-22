@@ -22,8 +22,8 @@ a:hover {
 form#login {
   display: block;
   background: #fff;
-  width: 200px;
-  margin: 20px auto;
+  width: 245px;
+  float: right;
 }
 
 form#login input,
@@ -49,7 +49,7 @@ form#login input[type="password"] {
   border-top: 1px solid #ccc;
   border-left: 1px solid #ccc;
   padding: 3px 5px;
-  width: 190px;
+  width: 230px;
 }
 
 form#login button[type="submit"] {
@@ -470,4 +470,16 @@ p.error a {
   font-weight: bold;
   color: #b96160;
   border-bottom: 1px solid #b96160;
+}
+
+div.description {
+  margin-right: 300px;
+}
+div.description p {
+  color: #333;
+  font-size: 18px;
+  line-height: 24px;
+}
+div.description em {
+  font-weight: bold;
 }
