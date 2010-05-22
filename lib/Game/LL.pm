@@ -1,16 +1,17 @@
 package Game::LL;
 
 use feature ':5.10';
-
 use lib 'lib';
-use Storable qw/freeze thaw/;
-use Game::LL::Schema;
-use Game::LL::Board;
-use Plack::Request;
+
 use JSON;
 use Any::Moose;
+use Plack::Request;
+use Storable qw/freeze thaw/;
 use Text::MicroTemplate::File;
 use Digest::SHA1 qw/sha1_hex/;
+
+use Game::LL::Schema;
+use Game::LL::Board;
 
 has schema => (
   is => 'ro',
@@ -43,10 +44,7 @@ has template => (
 has share_dir => (
   is => 'ro',
   default => sub {
-    if (-e "./share/TWL06.txt") {
-      return "./share";
-    }
-    return dist_dir("Game-LL");
+    return (-e "./share/TWL06.txt" ? "./share" : dist_dir("Game-LL"));
   }
 );
 
@@ -98,8 +96,8 @@ sub handle_state {
     $state->{board} = $self->render_section("board", $board);
     $state->{game_info} = $self->render_section("game_info", $user, $game, $board);
     $state->{letters} = [$game->player_letters($user)];
+    $state->{turn_count} = $game->turn_count;
   }
-  $state->{turn_count} = $game->turn_count;
   return $self->respond($state);
 }
 
