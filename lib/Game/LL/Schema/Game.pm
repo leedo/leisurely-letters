@@ -1,6 +1,7 @@
 package Game::LL::Schema::Game;
 use base qw/DBIx::Class::Core/;
 use Storable qw/thaw freeze/;
+use List::Util qw/reduce/;
 use List::MoreUtils qw/first_index/;
 
 __PACKAGE__->table('game');
@@ -124,11 +125,28 @@ sub play_pieces {
     });
 
     if (!$board->letters_left and !@letters) {
-      $self->add_status_message($user, "won the game!");
+      my $winner = $game->p1_score > $game->p2_score ? "p1" : "p2";
+      my $winner_user = $game->$winner;
+      my $winner_score = $winner . "_score";
+
+      my $loser = $winner == "p1" ? "p2" : "p1";
+      my $loser_user = $game->$loser;
+      my $loser_score = $loser . "_score";
+      my $loser_letters = $loser . "_letters";
+
+      my @letters = split "", $self->$loser_letters;
+
+      my $bonus = reduce {letter_score($a) + letter_score($b)} @letters;
       $self->update({
+        $winner_score => $self->$winner_score + $bonus,
+        $loser_score  => $self->$loser_score - $bonus,
         completed => 1,
-        winner => $user->id,
+        winner => $winner_user->id,
       });
+
+      $self->add_status_message($winner_user, "got $bonus point bonus");
+      $self->add_status_message($loser_user, "got $bonus point penalty");
+      $self->add_status_message($winner_user, "won the game!");
     }
 
     return 1;
