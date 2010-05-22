@@ -330,6 +330,22 @@ var Game = Class.create({
       onStart: function (piece, event) {
         var storage = piece.element.getStorage();
         storage.unset("position");
+      },
+      onEnd: function (piece, event) {
+      }
+    });
+    piece.observe("click", function (e) {
+      var piece = e.findElement(".piece");
+      var new_pos = piece.positionedOffset();
+      var storage = piece.getStorage();
+      var old_pos = storage.get("lastpos");
+      storage.set("lastpos", new_pos);
+
+      // only if it wasn't dragged anywhere, maybe check for
+      // non-draggable browsers instead
+      if (Math.abs(new_pos.top - old_pos.top) < 5 && Math.abs(new_pos.left - old_pos.left) < 5) {
+        $('tray').select(".piece.active").invoke("removeClassName","active");
+        piece.addClassName("active");
       }
     });
   },
@@ -338,28 +354,39 @@ var Game = Class.create({
     this.tray.select(".piece").each(function (piece) {
       var storage = piece.getStorage();
       storage.set("home", piece.positionedOffset());
+      storage.set("lastpos", piece.positionedOffset());
       this.makeDraggable(piece);
     }.bind(this));
   },
 
   setupBoard: function () {
     $('board').select(".empty").each(function(cell) {
+      cell.observe("click", function (e) {
+        var cell = e.findElement("td.empty");
+        var piece = $('tray').down('.active');
+        if (piece) {
+          this.movePiece(piece, cell);
+        }
+      }.bind(this));
       Droppables.add(cell, {
         accept: "piece",
         hoverclass: "hover",
-        onDrop: function (piece, cell, event) {
-          var position = piece.positionedOffset(),
-              cumulative = piece.cumulativeOffset(),
-              cell_cumulative = cell.cumulativeOffset();
-          var top_diff = cumulative.top - cell_cumulative.top - 1,
-              left_diff = cumulative.left - cell_cumulative.left;
-          var storage = piece.getStorage();
-          var y = cell.up("tr").previousSiblings().length;
-          var x = cell.previousSiblings().length;
-          storage.set("position", [x, y]);
-          piece.setStyle({top: position.top - top_diff + "px", left: position.left - left_diff + "px"});
-        }
+        onDrop: this.movePiece
       });
-    });
+    }.bind(this));
   },
+
+  movePiece: function (piece, cell) {
+    var position = piece.positionedOffset(),
+        cumulative = piece.cumulativeOffset(),
+        cell_cumulative = cell.cumulativeOffset();
+    var top_diff = cumulative.top - cell_cumulative.top - 1,
+        left_diff = cumulative.left - cell_cumulative.left;
+    var storage = piece.getStorage();
+    var y = cell.up("tr").previousSiblings().length;
+    var x = cell.previousSiblings().length;
+    storage.set("position", [x, y]);
+    piece.setStyle({top: position.top - top_diff + "px", left: position.left - left_diff + "px"});
+    storage.set("lastpos", piece.positionedOffset());
+  }
 });

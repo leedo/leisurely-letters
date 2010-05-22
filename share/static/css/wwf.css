@@ -316,6 +316,12 @@ table#tray div.piece.trade {
   border-right: 2px solid #9c0200;
 }
 
+table#tray div.piece.active {
+  border: 2px solid #67B438;
+  border-right: 2px solid #058600;
+  border-bottom: 2px solid #058600;
+}
+
 table#tray div.piece {
   background: #fff;
 }
