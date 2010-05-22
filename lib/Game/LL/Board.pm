@@ -64,6 +64,10 @@ sub return_letters {
 sub play_letters {
   my ($self, @letters) = @_;
   my $clone = $self->clone_grid;
+  unless ($self->started or $self->valid_start(@letters)) {
+    $self->errormsg("Invalid starting position");
+    return 0;
+  }
   for (@letters) {
     my ($letter, $x, $y) = @$_;
     if ($self->grid->[$y][$x]) {
@@ -142,14 +146,6 @@ sub check_grid {
     }
   };
   
-  if (!$self->started) {
-    my $valid_start = first {$_->[1] == 7 and $_->[2] == 7} @letters;
-    if (!$valid_start) {
-      $self->errormsg("Invalid starting position");
-      return 0;
-    }
-  }
-
   # set initial state values
   $reset_word->();
   $self->errormsg("");
@@ -183,6 +179,12 @@ sub check_grid {
   
   $self->errormsg("");
   return $grid_state->{points};
+}
+
+sub valid_start {
+  my ($self, @letters) = @_;
+  my $valid_start = first {$_->[1] == 7 and $_->[2] == 7} @letters;
+  return defined $valid_start;
 }
 
 sub clone_grid {
