@@ -466,3 +466,8 @@ p.error {
   color: #b96160;
   margin-bottom: 30px;
 }
+p.error a {
+  font-weight: bold;
+  color: #b96160;
+  border-bottom: 1px solid #b96160;
+}

@@ -9,6 +9,7 @@ use Plack::Request;
 use Storable qw/freeze thaw/;
 use Text::MicroTemplate::File;
 use Digest::SHA1 qw/sha1_hex/;
+use MIME::Lite;
 
 use Game::LL::Schema;
 use Game::LL::Board;
@@ -67,6 +68,7 @@ has url_handlers => (
       ["/games", "games"],
       [qr{^/game/(\d+)/state}, "handle_state"],
       [qr{^/game/(\d+)}, "game"],
+      [qr{^/invite}, "handle_invite"],
       ["/logout", "logout"],
     ]
   }
@@ -75,6 +77,23 @@ has url_handlers => (
 sub BUILD {
   my $self = shift;
   $self->template;
+}
+
+sub handle_invite {
+  my ($self, $req, $user) = @_;
+  my $email = normalize_email($req->parameters->{email});
+  if ($email) {
+    my $text = $self->render_section("email", $user);
+    my $msg = MIME::Lite->new(
+      From => 'no-reply@leisurelyletters.com',
+      To   => $email,
+      Subject => $user->display_name." has invited you to play at LeisurelyLetters.com",
+      Data => $text,
+    );
+    $msg->send;
+    return $self->redirect("/games?invited=$email");
+  }
+  return $self->redirect("/games");
 }
 
 sub handle_state {
@@ -163,8 +182,9 @@ sub game {
 
 sub new_game {
   my ($self, $req, $user) = @_;
-  if ($req->method eq "POST") {
-    my $opponent = $self->schema->resultset("User")->find({email => $req->param("opponent")});
+  my $email = normalize_email($req->parameters->{opponent});
+  if ($email and $req->method eq "POST") {
+    my $opponent = $self->schema->resultset("User")->find({email => $email});
     if ($opponent and $opponent->id != $user->id) {
       my $board = Game::LL::Board->new;
       my $game = $self->schema->resultset("Game")->create({
@@ -179,17 +199,19 @@ sub new_game {
       $game->update({board => $board, last_update => time});
       return $self->redirect("/game/".$game->id) if $game;
     }
+    return $self->redirect("/games?baduser=$email");
   }
-  return $self->redirect("/games?baduser=yes");
+  return $self->redirect("/games");
 }
 
 sub games {
   my ($self, $req, $user) = @_;
-  my $baduser = exists $req->parameters->{baduser};
+  my $baduser = normalize_email($req->parameters->{baduser});
+  my $invited = normalize_email($req->parameters->{invited});
   my $games = $self->schema->resultset("Game")->search([
     {p1 => $user->id}, {p2 => $user->id}
   ]);
-  return $self->respond("games", $user, $games, $baduser);
+  return $self->respond("games", $user, $games, $baduser, $invited);
 }
 
 sub logout {
@@ -258,6 +280,8 @@ sub create_user {
     }
   }
   return (0, $errors) if @$errors;
+
+  $params->{email} = normalize_email($params->{email});
 
   my $user = $self->schema->resultset("User")->find({email => $params->{email}});
   if ($user) {
@@ -333,6 +357,13 @@ sub render {
 sub render_section {
   my ($self, $template, @args) = @_;
   $self->template->render_file("$template.html", $self, @args)->as_string;
+}
+
+sub normalize_email {
+  my $email = shift;
+  return "" unless $email;
+  $email =~ s/\s/\+/g;
+  return lc $email;
 }
 
 __PACKAGE__->meta->make_immutable;

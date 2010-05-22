@@ -1,4 +1,4 @@
-? my ($app, $user, $games, $baduser) = @_;
+? my ($app, $user, $games, $baduser, $invited) = @_;
 ? my @completed;
 
 <script type="text/javascript">
@@ -25,7 +25,13 @@
 </form>
 
 ? if ($baduser) {
-  <p class="error">That email address is not registered, tell them to register and then try again.</p>
+  <p class="error"><?= $baduser ?> is not registered,
+    <a href="/invite?email=<?= $baduser ?>">click here to send an invite</a>
+  </p>
+? }
+
+? if ($invited) {
+  <p class="error"><?= $invited ?> has been invited.</p>
 ? }
 
 <div class="games">
