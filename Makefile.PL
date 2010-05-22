@@ -9,6 +9,7 @@ perl_version '5.01';
 all_from  'lib/Game/LL.pm';
 
 requires  'Plack' => 0;
+requires  'Plack::Middleware::Session' => 0;
 requires  'JSON' => 0;
 requires  'Any::Moose' => 0;
 requires  'Text::MicroTemplate' => 0;

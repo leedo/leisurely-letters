@@ -24,9 +24,10 @@ has schema => (
 has dsn => (
   is => 'ro',
   auto_deref => 1,
+  lazy => 1,
   isa => 'ArrayRef',
   default => sub {
-    [ "dbi:SQLite:dbname=ll.db", "", "" ];
+    [ "dbi:SQLite:dbname=".$_[0]->share_dir."/ll.db", "", "" ];
   }
 );
 
