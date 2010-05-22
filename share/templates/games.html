@@ -1,4 +1,4 @@
-? my ($app, $user, $games) = @_;
+? my ($app, $user, $games, $baduser) = @_;
 ? my @completed;
 
 <script type="text/javascript">
@@ -23,6 +23,10 @@
   <input type="email" name="opponent" id="user_search" class="empty" value="email address" autocomplete="off" />
   </p>
 </form>
+
+? if ($baduser) {
+  <p class="error">That email address is not registered, tell them to register and then try again.</p>
+? }
 
 <div class="games">
 <h2>Active Games</h2>

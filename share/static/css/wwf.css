@@ -461,3 +461,8 @@ p#create_game {
   margin-right: -20px;
   margin-bottom: 30px;
 }
+p.error {
+  text-align: center;
+  color: #b96160;
+  margin-bottom: 30px;
+}
