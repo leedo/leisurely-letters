@@ -85,7 +85,7 @@ sub handle_invite {
   if ($email) {
     my $text = $self->render_section("email", $user);
     my $msg = MIME::Lite->new(
-      From => 'no-reply@leisurelyletters.com',
+      From => 'Leisurely Letters <no-reply@leisurelyletters.com>',
       To   => $email,
       Subject => $user->display_name." has invited you to play at LeisurelyLetters.com",
       Data => $text,
