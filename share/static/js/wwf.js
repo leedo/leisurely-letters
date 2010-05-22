@@ -329,26 +329,26 @@ var Game = Class.create({
     piece.absolutize();
     new Draggable(piece, {
       onStart: function (piece, event) {
+        this.focusPiece(piece.element);
         var storage = piece.element.getStorage();
         storage.unset("position");
-      },
-      onEnd: function (piece, event) {
-      }
+      }.bind(this),
     });
     piece.observe("click", function (e) {
       var piece = e.findElement(".piece");
       var new_pos = piece.positionedOffset();
       var storage = piece.getStorage();
       var old_pos = storage.get("lastpos");
-      storage.set("lastpos", new_pos);
 
       // only if it wasn't dragged anywhere, maybe check for
       // non-draggable browsers instead
       if (Math.abs(new_pos.top - old_pos.top) < 5 && Math.abs(new_pos.left - old_pos.left) < 5) {
-        $('tray').select(".piece.active").invoke("removeClassName","active");
-        piece.addClassName("active");
+        this.focusPiece(piece);
+      } else {
+        piece.removeClassName("active");
+        storage.set("lastpos", new_pos);
       }
-    });
+    }.bind(this));
   },
 
   setupTray: function () {
@@ -366,13 +366,18 @@ var Game = Class.create({
         var cell = e.findElement("td.empty");
         var piece = $('tray').down('.active');
         if (piece) {
+          piece.removeClassName("active");
           this.movePiece(piece, cell);
+          piece.getStorage().set("lastpos", piece.positionedOffset());
         }
       }.bind(this));
       Droppables.add(cell, {
         accept: "piece",
         hoverclass: "hover",
-        onDrop: this.movePiece
+        onDrop: function (piece, cell, e) {
+          piece.removeClassName("active");
+          this.movePiece(piece, cell);
+        }.bind(this)
       });
     }.bind(this));
   },
@@ -388,6 +393,11 @@ var Game = Class.create({
     var x = cell.previousSiblings().length;
     storage.set("position", [x, y]);
     piece.setStyle({top: position.top - top_diff + "px", left: position.left - left_diff + "px"});
-    storage.set("lastpos", piece.positionedOffset());
+  },
+
+  focusPiece: function (piece) {
+    var old = $('tray').down(".active");
+    if (old) old.removeClassName("active");
+    piece.addClassName("active");
   }
 });

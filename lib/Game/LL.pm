@@ -158,7 +158,7 @@ sub game {
     my $board = thaw $game->board;
     return $self->respond("game", $user, $game, $board);
   }
-  return $self->redirect("/games");
+  return $self->redirect("/games?baduser");
 }
 
 sub new_game {
