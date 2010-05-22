@@ -5,7 +5,7 @@ use POSIX qw/floor/;
 use List::Util qw/shuffle reduce first/;
 use JSON;
 use Text::MicroTemplate qw/encoded_string/;
-use Game::LL::Board::Data qw/letter_count word_multiplier letter_score
+use Game::LL::Board::Util qw/letter_count word_multiplier letter_score
                              letter_multiplier valid_word/;
 
 has grid => (
@@ -38,7 +38,7 @@ has letters => (
 
 sub json_letter_scores {
   my $self = shift;
-  return encoded_string to_json $Game::LL::Board::Data::scores;
+  return encoded_string to_json $Game::LL::Board::Util::scores;
 }
 
 sub json_grid {
@@ -82,17 +82,22 @@ sub play_letters {
 sub check_grid {
   my ($self, $grid, @letters) = @_;
 
-  # state variables
-  my ($points, $current_word, $word_score, $word_multiplier,
-      $pointed_word, $connected, $error, $valid_start, $_x, $_y);
+  my $grid_state = {
+    connected => 0, # all new letters are connected to something
+    prev => [0, 0], # last y,x coordinates
+    error => 0,     # error bool
+    points => 0,    # total points for all new words
+  };
 
+  my $word = {}; # current word
   my $reset_word = sub {
-    $current_word = "";
-    $word_score = 0;
-    $word_multiplier = 1;
-    $pointed_word = 0;
-    $connected = 0;
-    $valid_start = 0;
+    $word = {
+      letters => "",
+      score => 0,
+      multiplier => 1,
+      pointed => 0,
+      connected => 0,
+    };
   };
 
   my $next_letter = sub {
@@ -100,42 +105,34 @@ sub check_grid {
     my $letter = $grid->[$y][$x];
 
     if ($letter) {
-      $current_word .= $letter;
+      $word->{letters} .= $letter;
       if (first {$_->[1] == $x and $_->[2] == $y} @letters) {
-        $valid_start = 1 if $x == 7 and $y == 7;
-        $pointed_word = 1;
-        $word_multiplier *= word_multiplier($y, $x);
-        $word_score += letter_score($letter) * letter_multiplier($y, $x);
+        $word->{pointed} = 1;
+        $word->{multiplier} *= word_multiplier($y, $x);
+        $word->{score} += letter_score($letter) * letter_multiplier($y, $x);
       }
       else {
-        $connected = 1;
-        $word_score += letter_score($letter);
+        $word->{connected} = 1;
+        $word->{score} += letter_score($letter);
       }
     }
-    elsif ($current_word and length $current_word > 1) {
-      if (!$self->started and !$valid_start) {
-        $error = 1;
-        $self->errormsg("Invalid starting position");
+    elsif ($word->{letters} and length $word->{letters} > 1) {
+      if (!valid_word($word->{letters})) {
+        $grid_state->{error} = 1;
+        $self->errormsg("Invalid word $word->{letters}");
       }
-      elsif ($self->started and !$connected) {
-        $error = 1;
-        $self->errormsg("Word is not connected!");
-      }
-      elsif (!valid_word($current_word)) {
-        $error = 1;
-        $self->errormsg("Invalid word $current_word");
-      }
-      elsif ($pointed_word) {
-        $points += $word_score * $word_multiplier;
-        $self->started(1) if !$self->started;
+      elsif ($word->{pointed}) {
+        $grid_state->{points} += $word->{score} * $word->{multiplier};
+        $grid_state->{connected} = 1 if $word->{connected};
       }
       $reset_word->();
     }
-    elsif (length $current_word == 1) {
-      # check if last square (this letter) is floating in space
+    elsif (length $word->{letters} == 1) {
+      my ($_y, $_x) = @{$grid_state->{prev}};
+      # check if last piece is floating in space
       unless ($grid->[$_y - 1][$_x] or $grid->[$_y + 1][$_x]
            or $grid->[$_y][$_x - 1] or $grid->[$_y][$_x + 1]) {
-         $error = 1;
+         $grid_state->{error} = 1;
          $self->errormsg("A letter is floating in space, man.");
       }
       $reset_word->();
@@ -145,31 +142,47 @@ sub check_grid {
     }
   };
   
+  if (!$self->started) {
+    my $valid_start = first {$_->[1] == 7 and $_->[2] == 7} @letters;
+    if (!$valid_start) {
+      $self->errormsg("Invalid starting position");
+      return 0;
+    }
+  }
+
   # set initial state values
   $reset_word->();
   $self->errormsg("");
-  ($_x, $_y) = (0, 0);
 
   for (my $y = 0; $y < 16; $y++) {
     for (my $x = 0; $x < 16; $x++) {
       $next_letter->($y, $x);
-      return 0 if $error;
-      ($_y, $_x) = ($y, $x);
+      return 0 if $grid_state->{error};
+      $grid_state->{prev} = [$y, $x];
     }
     $reset_word->();
   }
 
-  ($_x, $_y) = (0, 0);
+  $grid_state->{prev} = [0, 0];
+
   for (my $x = 0; $x < 16; $x++) {
     for (my $y = 0; $y < 16; $y++) {
       $next_letter->($y, $x);
-      return 0 if $error;
-      ($_y, $_x) = ($y, $x);
+      return 0 if $grid_state->{error};
+      $grid_state->{prev} = [$y, $x];
     }
     $reset_word->();
   }
+
+  if ($self->started and !$grid_state->{connected}) {
+    $self->errormsg("Not connected!");
+    return 0;
+  } elsif (!$self->started) {
+    $self->started(1);
+  }
   
-  return $points;
+  $self->errormsg("");
+  return $grid_state->{points};
 }
 
 sub clone_grid {

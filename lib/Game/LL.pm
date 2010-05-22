@@ -1,16 +1,17 @@
 package Game::LL;
 
 use feature ':5.10';
-
 use lib 'lib';
-use Storable qw/freeze thaw/;
-use Game::LL::Schema;
-use Game::LL::Board;
-use Plack::Request;
+
 use JSON;
 use Any::Moose;
+use Plack::Request;
+use Storable qw/freeze thaw/;
 use Text::MicroTemplate::File;
 use Digest::SHA1 qw/sha1_hex/;
+
+use Game::LL::Schema;
+use Game::LL::Board;
 
 has schema => (
   is => 'ro',
@@ -23,9 +24,10 @@ has schema => (
 has dsn => (
   is => 'ro',
   auto_deref => 1,
+  lazy => 1,
   isa => 'ArrayRef',
   default => sub {
-    [ "dbi:SQLite:dbname=ll.db", "", "" ];
+    [ "dbi:SQLite:dbname=".$_[0]->share_dir."/ll.db", "", "" ];
   }
 );
 
@@ -35,14 +37,16 @@ has template => (
   default => sub {
     Text::MicroTemplate::File->new(
       include_path => $_[0]->share_dir . "/templates",
-      package_name => "Game::LL::Board::Data",
+      package_name => "Game::LL::Board::Util",
     );
   },
 );
 
 has share_dir => (
   is => 'ro',
-  default => './share',
+  default => sub {
+    return (-e "./share/TWL06.txt" ? "./share" : dist_dir("Game-LL"));
+  }
 );
 
 has static_prefix => (
@@ -93,8 +97,8 @@ sub handle_state {
     $state->{board} = $self->render_section("board", $board);
     $state->{game_info} = $self->render_section("game_info", $user, $game, $board);
     $state->{letters} = [$game->player_letters($user)];
+    $state->{turn_count} = $game->turn_count;
   }
-  $state->{turn_count} = $game->turn_count;
   return $self->respond($state);
 }
 
