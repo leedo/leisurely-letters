@@ -335,6 +335,8 @@ var Game = Class.create({
       }.bind(this),
     });
     piece.observe("click", function (e) {
+      if ($('tray').hasClassName('trading')) return;
+
       var piece = e.findElement(".piece");
       var new_pos = piece.positionedOffset();
       var storage = piece.getStorage();
