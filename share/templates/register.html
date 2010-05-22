@@ -14,6 +14,7 @@
 </script>
 
 <form action="/register" method="post" id="login">
+  <h2>Register</h2>
   <label for="email">Email Address</label>
   <input type="email" name="email" value="<?= $parameters->{email} || "" ?>" id="email" />
 
@@ -31,3 +32,4 @@
     <? } ?>
   <? } ?>
 </form>
+<?= $_mt->render_file("description.html", $app) ?>

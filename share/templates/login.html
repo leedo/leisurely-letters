@@ -12,6 +12,7 @@
   });
 </script>
 <form action="/login" method="post" id="login">
+  <h2>Login</h2>
   <label for="email">Email Address</label>
   <input type="email" name="email" value="<?= $parameters->{email} || "" ?>" id="email" />
 
@@ -24,3 +25,4 @@
     <span class="error"><?= $error ?></span>
   <? } ?>
 </form>
+<?= $_mt->render_file("description.html", $app) ?>
