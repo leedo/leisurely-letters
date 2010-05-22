@@ -5,7 +5,7 @@ use POSIX qw/floor/;
 use List::Util qw/shuffle reduce first/;
 use JSON;
 use Text::MicroTemplate qw/encoded_string/;
-use Game::LL::Board::Data qw/letter_count word_multiplier letter_score
+use Game::LL::Board::Util qw/letter_count word_multiplier letter_score
                              letter_multiplier valid_word/;
 
 has grid => (
@@ -38,7 +38,7 @@ has letters => (
 
 sub json_letter_scores {
   my $self = shift;
-  return encoded_string to_json $Game::LL::Board::Data::scores;
+  return encoded_string to_json $Game::LL::Board::Util::scores;
 }
 
 sub json_grid {

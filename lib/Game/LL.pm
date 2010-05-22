@@ -36,7 +36,7 @@ has template => (
   default => sub {
     Text::MicroTemplate::File->new(
       include_path => $_[0]->share_dir . "/templates",
-      package_name => "Game::LL::Board::Data",
+      package_name => "Game::LL::Board::Util",
     );
   },
 );

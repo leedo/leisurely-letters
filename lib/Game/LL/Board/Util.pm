@@ -1,4 +1,4 @@
-package Game::LL::Board::Data;
+package Game::LL::Board::Util;
 use base "Exporter";
 use Path::Class qw/file/;
 
