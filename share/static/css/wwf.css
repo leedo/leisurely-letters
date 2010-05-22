@@ -40,6 +40,7 @@ form#login label {
   letter-spacing: 1px;
 }
 
+form#login input[type="email"],
 form#login input[type="text"],
 form#login input[type="password"] {
   margin-bottom: 20px;
@@ -317,9 +318,8 @@ table#tray div.piece.trade {
 }
 
 table#tray div.piece.active {
-  border: 2px solid #67B438;
-  border-right: 2px solid #058600;
-  border-bottom: 2px solid #058600;
+  -webkit-box-shadow: 5px 10px 5px rgba(0,0,0,0.5);
+  z-index: 900;
 }
 
 table#tray div.piece {
