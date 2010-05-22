@@ -72,6 +72,7 @@ var Game = Class.create({
       var home = storage.get("home");
       if (home) {
         piece.setStyle({top: home.top+"px", left: home.left+"px"});
+        storage.set("lastpos", piece.positionedOffset());
       }
     });
   },
