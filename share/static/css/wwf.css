@@ -477,10 +477,25 @@ p.error a {
 div.description {
   margin-right: 300px;
 }
-div.description p {
-  color: #333;
+div.description div.desc_img {
+  background: url("/static/img/ll5.jpg") -300px -100px;
+  height: 375px;
+  position: relative;
+}
+div.description div.desc_img p {
   font-size: 18px;
   line-height: 24px;
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+  padding: 10px;
+}
+div.description div.desc_img p.bottom {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  margin: 0;
+  font-size: 12px;
 }
 div.description em {
   font-weight: bold;
