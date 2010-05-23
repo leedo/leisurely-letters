@@ -3,6 +3,7 @@ package Game::LL::Board;
 use Any::Moose;
 use POSIX qw/floor/;
 use List::Util qw/shuffle reduce first/;
+use List::MoreUtils qw/all/;
 use JSON;
 use Text::MicroTemplate qw/encoded_string/;
 use Game::LL::Board::Util qw/letter_count word_multiplier letter_score
@@ -146,6 +147,11 @@ sub check_grid {
     }
   };
   
+  unless ($self->forms_line($grid, @letters)) {
+    $self->errormsg("Letters do not form a line");
+    return 0;
+  }
+
   # set initial state values
   $reset_word->();
   $self->errormsg("");
@@ -194,6 +200,26 @@ sub clone_grid {
     push @$new_grid, [ @{$row} ];
   }
   return $new_grid;
+}
+
+sub forms_line {
+  my ($self, $grid, @letters) = @_;
+
+  my $y_line = all {$_->[1] == $letters[0]->[1]} @letters;
+  my $x_line = all {$_->[2] == $letters[0]->[2]} @letters;
+
+  return 0 unless $x_line or $y_line;
+  my ($error_x, $error_y) = (0,0);
+
+  if ($x_line) {
+    my @coords = sort map {$_->[1]} @letters;
+    my $error_x = ! all {$grid->[$letters[0]->[2]][$_]} $coords[0] .. $coords[-1];
+  } else {
+    my @coords = sort map {$_->[2]} @letters;
+    my $error_y = ! all {$grid->[$_][$letters[0]->[1]]} $coords[0] .. $coords[-1];
+  }
+
+  return (!$error_x and !$error_y);
 }
 
 1;
