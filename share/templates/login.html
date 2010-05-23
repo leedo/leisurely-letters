@@ -19,10 +19,11 @@
   <label for="password">Password</label>
   <input type="password" name="password" value ="" id="password" />
 
-  <button type="submit">Log in</button>
+  <button type="submit" style="float:left">Log in</button>
+  <a href="/register" style="float:left;font-size:12px;margin-top:4px;margin-left:10px">Register</a>
 
   <? if ($error) { ?>
-    <span class="error"><?= $error ?></span>
+    <span style="clear:both" class="error"><?= $error ?></span>
   <? } ?>
 </form>
 <?= $_mt->render_file("description.html", $app) ?>

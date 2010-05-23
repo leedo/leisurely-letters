@@ -484,4 +484,5 @@ div.description p {
 }
 div.description em {
   font-weight: bold;
+  font-style: normal;
 }

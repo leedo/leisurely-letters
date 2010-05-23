@@ -24,12 +24,15 @@
   <label for="password">Password</label>
   <input type="password" name="password" value ="" id="password" />
 
-  <button type="submit">Register</button>
+  <button type="submit" style="float:left">Register</button>
+  <a href="/login" style="float:left;font-size:12px;margin-top:4px;margin-left:10px">Login</a>
 
   <? if (@$errors) { ?>
+  <div style="clear:both">
     <? for my $error (@$errors) { ?>
     <span class="error"><?= $error ?></span>
     <? } ?>
+  </div>
   <? } ?>
 </form>
 <?= $_mt->render_file("description.html", $app) ?>
