@@ -38,6 +38,7 @@ form#login label {
   text-transform: uppercase;
   font-weight: normal;
   letter-spacing: 1px;
+  margin-top: 20px;
 }
 
 form#login input[type="email"],
@@ -74,7 +75,7 @@ div#header h1 {
   float: right;
   width: 264px;
   margin: 0;
-  text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
+  text-shadow: 1px 1px 1px rgba(0,0,0,0.7);
   padding: 0;
   color: #fff;
   font-size: 18px;
@@ -90,14 +91,15 @@ div#header ul#nav {
   background: #fff;
   font-size: 0.8em;
   margin-left: 20px;
-  border-bottom: 1px solid #999;
+  border-bottom: 1px solid #ccc;
   border-right: 1px solid #999;
   float: left;
+  font-size: 10px;
 }
 
 div#header ul#nav li {
   float: right;
-  padding: 4px;
+  padding: 4px 5px;
   border-left: 1px solid #ccc;
 }
 
@@ -110,10 +112,8 @@ div#footer {
 
 div#content {
   width: 800px;
-  border: 1px solid #ccc;
-  border-right: 1px solid #bbb;
-  border-bottom: 1px solid #bbb;
-  border-top: none;
+  -webkit-box-shadow: 2px 2px 3px rgba(0,0,0,0.5);
+  -moz-box-shadow: 2px 2px 3px rgba(0,0,0,0.5);
   padding: 20px;
   margin: 0 auto;
   background: #fff;
@@ -190,7 +190,7 @@ div#log ul#messages li {
 
 table#game_info {
   float: right;
-  width: 245px;
+  width: 242px;
   margin: 0;
   padding: 0;
   font-size: 1.2em;
@@ -220,6 +220,10 @@ table#game_info tr td.score {
   border: 2px solid #97AA89;
   border-top: 2px solid #344825;
   border-left: 2px solid #344825;
+}
+
+table#game_info tr.separator td {
+  height: 1px;
 }
 
 table#game_info tr td {
@@ -319,6 +323,7 @@ table#tray div.piece.trade {
 
 table#tray div.piece.active {
   -webkit-box-shadow: 3px 8px 5px rgba(0,0,0,0.5);
+  -moz-box-shadow: 3px 8px 5px rgba(0,0,0,0.5);
   margin-left: -2px;
   margin-top: -2px;
   z-index: 900;
@@ -347,6 +352,7 @@ div.piece span.letter_score {
 
 button {
   color: #fff;
+  -webkit-border-radius: 2px;
   background: #000;
   text-transform: uppercase;
   cursor: pointer;
@@ -421,7 +427,7 @@ h2 {
   letter-spacing: 1px;
   font-size: 16px;
   margin: 10px 0;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid #bbb;
 }
 
 div.games {
@@ -435,11 +441,27 @@ div.games ul {
 }
 
 div.games li {
-  margin: 5px 10px 10px 10px;
+  margin: 0px;
   width: 150px;
   overflow: hidden;
   text-overflow: ellipsis;
   float: left;
+}
+
+div.games li a {
+  display: block;
+  padding: 10px;
+  border: 1px solid #fff;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+}
+
+div.games li a:hover {
+  background: #efefef;
+  border: 1px solid #eee;
+  border-right: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  color: blue;
 }
 
 div.games li.active {
@@ -462,6 +484,7 @@ p#create_game {
   margin-left: -20px;
   margin-right: -20px;
   margin-bottom: 30px;
+  border-bottom: 2px solid #666;
 }
 p.error {
   text-align: center;

@@ -1,10 +1,14 @@
 ? my ($app, $user, $game, $board) = @_;
 ? my $active = $game->active_player;
 
-<table id="game_info">
+<table id="game_info" cellspacing="0">
   <tr class="<?= $active == 1 ? "active" : "" ?> <?= $game->p1->id == $user->id ? "self" : "" ?>">
     <td class="score"><?= $game->p1_score ?></td>
     <td><?= $game->p1->display_name ?></td>
+  </tr>
+  <tr class="separator">
+    <td colspan="2">
+    </td>
   </tr>
   <tr class="<?= $active == 2 ? "active" : "" ?> <?= $game->p2->id == $user->id ? "self" : "" ?>">
     <td class="score"><?= $game->p2_score ?></td>
