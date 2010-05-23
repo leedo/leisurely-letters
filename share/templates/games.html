@@ -1,6 +1,4 @@
 ? my ($app, $user, $games, $baduser, $invited) = @_;
-? use DateTime;
-? my @completed;
 
 <script type="text/javascript">
   document.observe("dom:loaded", function () {
@@ -17,6 +15,7 @@
         input.addClassName("empty");
       }
     });
+    new Ajax.PeriodicalUpdater("games", "/games/state", {frequency: 10});
   });
 </script>
 <form action="/new" method="post">
@@ -35,59 +34,6 @@
   <p class="error"><?= $invited ?> has been invited.</p>
 ? }
 
-<div class="games">
-<h2>Active Games</h2>
-<ul>
-? while (my $game = $games->next) {
-? if ($game->completed) {
-?   push @completed, $game;
-?   next;
-? }
-<li<? if ($game->is_current_player($user)) { ?> class="active"<? } ?>>
-? my $duration = DateTime->now - DateTime->from_epoch(epoch => $game->last_update);
-? my ($days, $hours, $minutes) = ($duration->days, $duration->hours, $duration->minutes);
-  <a href="/game/<?= $game->id ?>">
-    <?= $game->opponent($user)->display_name ?><br>
-    <span class="email"><?= $game->opponent($user)->email ?><br>
-      <? if ($days) { ?>
-      <?= $days ?> days
-      <? } elsif ($hours) { ?>
-      <?= $hours ?> hours
-      <? } else { ?>
-      <?= $minutes ?> minutes
-      <? } ?>
-      ago
-    </span>
-  </a>
-</li>
-? }
-</ul>
+<div id="games">
+?= $_mt->render_file("games_list.html", $app, $games, $user);
 </div>
-
-? if (@completed) {
-<div class="games">
-<h2>Completed Games</h2>
-<ul>
-? for my $game (@completed) {
-? my $duration = DateTime->now - DateTime->from_epoch(epoch => $game->last_update);
-? my ($days, $hours, $minutes) = ($duration->days, $duration->hours, $duration->minutes);
-<li>
-<a href="/game/<?= $game->id ?>">
-    <?= $game->opponent($user)->display_name ?><br>
-    <span class="email"><?= $game->opponent($user)->email ?><br>
-      <? if ($days) { ?>
-      <?= $days ?> days
-      <? } elsif ($hours) { ?>
-      <?= $hours ?> hours
-      <? } else { ?>
-      <?= $minutes ?> minutes
-      <? } ?>
-      ago
-
-    </span>
-  </a>
-</li>
-? }
-</ul>
-</div>
-? }

@@ -66,6 +66,7 @@ has url_handlers => (
       [qr{^/game/(\d+)/play}, "handle_turn"],
       ["/new", "new_game"],
       ["/games", "games"],
+      ["/games/state", "handle_games_state"],
       [qr{^/game/(\d+)/state}, "handle_state"],
       [qr{^/game/(\d+)}, "game"],
       [qr{^/invite}, "handle_invite"],
@@ -202,6 +203,15 @@ sub new_game {
     return $self->redirect("/games?baduser=$email");
   }
   return $self->redirect("/games");
+}
+
+sub handle_games_state {
+  my ($self, $req, $user) = @_;
+  my $games = $self->schema->resultset("Game")->search([
+    {p1 => $user->id}, {p2 => $user->id}
+  ]);
+  my $html = $self->render_section("game_lists", $games, $user);
+  return [200, ["Content-Type","text/html"], [$html]];
 }
 
 sub games {
