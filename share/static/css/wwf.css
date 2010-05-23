@@ -478,7 +478,7 @@ div.description {
   margin-right: 300px;
 }
 div.description div.desc_img {
-  background: url("/static/img/ll5.jpg") -300px -100px;
+  background: url("http://static.leisurelyletters.com/img/ll5.jpg") -300px -100px;
   height: 375px;
   position: relative;
 }
