@@ -1,0 +1,22 @@
+? my ($app, $game, $user) = @_;
+? use DateTime;
+
+<li id="game_<?= $game->id ?>"<? if (!$game->completed and $game->is_current_player($user)) { ?> class="active"<? } ?>>
+? my $duration = DateTime->now - DateTime->from_epoch(epoch => $game->last_update);
+? my ($days, $hours, $minutes) = ($duration->days, $duration->hours, $duration->minutes);
+  <a href="/game/<?= $game->id ?>">
+    <?= $game->opponent($user)->display_name ?><br>
+    <span class="email"><?= $game->opponent($user)->email ?><br>
+      last update 
+      <? if ($days) { ?>
+      <?= $days ?> days
+      <? } elsif ($hours) { ?>
+      <?= $hours ?> hours
+      <? } else { ?>
+      <?= $minutes ?> minutes
+      <? } ?>
+      ago
+    </span>
+  </a>
+</li>
+

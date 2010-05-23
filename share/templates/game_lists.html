@@ -1,0 +1,26 @@
+? my ($app, $games, $user) = @_;
+? my @completed;
+
+<div class="games">
+<h2>Active Games</h2>
+<ul id="active_games">
+? while (my $game = $games->next) {
+? if ($game->completed) {
+?   push @completed, $game;
+?   next;
+? }
+?= $_mt->render_file("game_overview.html", $app, $game, $user);
+? }
+</ul>
+</div>
+
+? if (@completed) {
+<div class="games">
+<h2>Completed Games</h2>
+<ul id="completed_games">
+? for my $game (@completed) {
+?= $_mt->render_file("game_overview.html", $app, $game, $user);
+? }
+</ul>
+</div>
+? }
