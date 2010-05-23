@@ -1,4 +1,5 @@
 ? my ($app, $user, $games, $baduser, $invited) = @_;
+? use DateTime;
 ? my @completed;
 
 <script type="text/javascript">
@@ -43,9 +44,21 @@
 ?   next;
 ? }
 <li<? if ($game->is_current_player($user)) { ?> class="active"<? } ?>>
+? my $duration = DateTime->now - DateTime->from_epoch(epoch => $game->last_update);
+? my ($days, $hours, $minutes) = ($duration->days, $duration->hours, $duration->minutes);
   <a href="/game/<?= $game->id ?>">
     <?= $game->opponent($user)->display_name ?><br>
-    <span class="email"><?= $game->opponent($user)->email ?></span>
+    <span class="email"><?= $game->opponent($user)->email ?><br>
+      last update 
+      <? if ($days) { ?>
+      <?= $days ?> days
+      <? } elsif ($hours) { ?>
+      <?= $hours ?> hours
+      <? } else { ?>
+      <?= $minutes ?> minutes
+      <? } ?>
+      ago
+    </span>
   </a>
 </li>
 ? }
@@ -56,10 +69,23 @@
 <h2>Completed Games</h2>
 <ul>
 ? for my $game (@completed) {
+? my $duration = DateTime->now - DateTime->from_epoch(epoch => $game->last_update);
+? my ($days, $hours, $minutes) = ($duration->days, $duration->hours, $duration->minutes);
 <li>
 <a href="/game/<?= $game->id ?>">
     <?= $game->opponent($user)->display_name ?><br>
-    <span class="email"><?= $game->opponent($user)->email ?></span>
+    <span class="email"><?= $game->opponent($user)->email ?><br>
+      finished
+      <? if ($days) { ?>
+      <?= $days ?> days
+      <? } elsif ($hours) { ?>
+      <?= $hours ?> hours
+      <? } else { ?>
+      <?= $minutes ?> minutes
+      <? } ?>
+      ago
+
+    </span>
   </a>
 </li>
 ? }
