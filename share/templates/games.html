@@ -15,7 +15,7 @@
         input.addClassName("empty");
       }
     });
-    new Ajax.PeriodicalUpdater("games", "/games/state", {frequency: 10});
+    new Ajax.PeriodicalUpdater("games", "/games/state", {frequency: 60});
   });
 </script>
 <form action="/new" method="post">
