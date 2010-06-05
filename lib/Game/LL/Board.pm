@@ -204,13 +204,14 @@ sub clone_grid {
 
 sub forms_line {
   my ($self, $grid, @letters) = @_;
-
-  my $y_line = all {$_->[1] == $letters[0]->[1]} @letters;
-  my $x_line = all {$_->[2] == $letters[0]->[2]} @letters;
-
-  return 0 unless $x_line or $y_line;
   my ($error_x, $error_y) = (0,0);
 
+  # check if letters are all on x or y axis
+  my $y_line = all {$_->[1] == $letters[0]->[1]} @letters;
+  my $x_line = all {$_->[2] == $letters[0]->[2]} @letters;
+  return 0 unless $x_line or $y_line;
+
+ # check that all cells are filed between start and end of line
   if ($x_line) {
     my @coords = sort map {$_->[1]} @letters;
     my $error_x = ! all {$grid->[$letters[0]->[2]][$_]} $coords[0] .. $coords[-1];

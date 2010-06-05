@@ -71,8 +71,15 @@ var Game = Class.create({
       storage.unset("position");
       var home = storage.get("home");
       if (home) {
-        piece.setStyle({top: home.top+"px", left: home.left+"px"});
-        storage.set("lastpos", piece.positionedOffset());
+        new Effect.Move(piece, {
+          x: home.left,
+          y: home.top,
+          mode: "absolute",
+          duration: 0.1,
+          afterFinish: function () {
+            storage.set("lastpos", piece.positionedOffset());
+          }
+        });
       }
     });
   },
@@ -368,33 +375,43 @@ var Game = Class.create({
         var cell = e.findElement("td.empty");
         var piece = $('tray').down('.active');
         if (piece) {
-          piece.removeClassName("active");
-          this.movePiece(piece, cell);
-          piece.getStorage().set("lastpos", piece.positionedOffset());
+          this.movePiece(piece, cell, function () {
+            piece.removeClassName("active");
+            piece.getStorage().set("lastpos", piece.positionedOffset());
+          });
         }
       }.bind(this));
       Droppables.add(cell, {
         accept: "piece",
         hoverclass: "hover",
         onDrop: function (piece, cell, e) {
-          piece.removeClassName("active");
-          this.movePiece(piece, cell);
+          this.movePiece(piece, cell, function () {
+            piece.removeClassName("active");
+          });
         }.bind(this)
       });
     }.bind(this));
   },
 
-  movePiece: function (piece, cell) {
+  movePiece: function (piece, cell, callback) {
     var position = piece.positionedOffset(),
         cumulative = piece.cumulativeOffset(),
         cell_cumulative = cell.cumulativeOffset();
-    var top_diff = cumulative.top - cell_cumulative.top - 1,
-        left_diff = cumulative.left - cell_cumulative.left;
+    var top_diff = cumulative.top - cell_cumulative.top + 1,
+        left_diff = cumulative.left - cell_cumulative.left + 1;
     var storage = piece.getStorage();
     var y = cell.up("tr").previousSiblings().length;
     var x = cell.previousSiblings().length;
     storage.set("position", [x, y]);
-    piece.setStyle({top: position.top - top_diff + "px", left: position.left - left_diff + "px"});
+    new Effect.Move(piece, {
+      x: position.left - left_diff,
+      y: position.top - top_diff,
+      mode: 'absolute',
+      duration: 0.1,
+      afterFinish: function () {
+        callback();
+      }
+    });
   },
 
   focusPiece: function (piece) {

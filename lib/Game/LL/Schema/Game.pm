@@ -125,11 +125,11 @@ sub play_pieces {
     });
 
     if (!$board->letters_left and !@letters) {
-      my $winner = $self->p1_score > $self->p2_score ? "p1" : "p2";
+      my $winner = ($self->p1_score > $self->p2_score ? "p1" : "p2");
       my $winner_user = $self->$winner;
       my $winner_score = $winner . "_score";
 
-      my $loser = $winner == "p1" ? "p2" : "p1";
+      my $loser = ($winner == "p1" ? "p2" : "p1");
       my $loser_user = $self->$loser;
       my $loser_score = $loser . "_score";
       my $loser_letters = $loser . "_letters";
